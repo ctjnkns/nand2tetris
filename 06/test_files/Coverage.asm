@@ -1,0 +1,5 @@
+@R1
+AM=A;JEQ
+AD=M;JGE
+AMD=D;JLT
+AM=D;JNE

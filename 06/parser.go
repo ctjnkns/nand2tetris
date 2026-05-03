@@ -13,6 +13,7 @@ import (
 const (
 	A_COMMAND = iota
 	C_COMMAND
+	L_COMMAND
 )
 
 type parser struct {
@@ -22,6 +23,7 @@ type parser struct {
 	asmFileName    string
 	hackFileName   string
 	filePath       string
+	data           []byte
 }
 
 func NewParser(argument string) (*parser, error) {
@@ -50,6 +52,7 @@ func NewParser(argument string) (*parser, error) {
 		asmFileName:  fileName,
 		hackFileName: hackFileName,
 		filePath:     filePath,
+		data:         data,
 	}
 
 	p.advance()
@@ -88,27 +91,46 @@ func (p *parser) advance() {
 		}
 
 		p.nextCommand = line
+
 		return
 	}
 }
 
-// commandType returns the command type of the currently stored command
-func (p *parser) commandType() int {
-	if strings.HasPrefix(p.currentCommand, "@") {
-		return A_COMMAND
-	}
-
-	return C_COMMAND
+func (p *parser) reset() {
+	p.scanner = bufio.NewScanner(bytes.NewReader(p.data))
+	p.currentCommand = ""
+	p.nextCommand = ""
+	p.advance()
 }
 
-// symbol returns the symbol or decomail value of the current command.
+// commandType returns the command type of the currently stored command
+func (p *parser) commandType() int {
+	switch {
+	case strings.HasPrefix(p.currentCommand, "@"):
+		return A_COMMAND
+	case strings.HasPrefix(p.currentCommand, "("):
+		return L_COMMAND
+	default:
+		return C_COMMAND
+	}
+}
+
+// symbol returns the symbol or decimal value of the current command.
 // Should only be called when commandType() returns an A_COMMAND or L_COMMAND
 func (p *parser) symbol() string {
-	symbol := strings.Trim(p.currentCommand, "@")
+	var symbol string
+	switch p.commandType() {
+	case A_COMMAND:
+		symbol = strings.TrimPrefix(p.currentCommand, "@")
+	case L_COMMAND:
+		symbol = strings.TrimPrefix(p.currentCommand, "(")
+		symbol = strings.TrimSuffix(symbol, ")")
+	}
+
 	return symbol
 }
 
-// dest returns the dest mnemonic in the current commnad.
+// dest returns the dest mnemonic in the current command.
 // Should only be called when commandType() returns a C_COMMAND
 func (p *parser) dest() string {
 	dest := ""
@@ -141,7 +163,7 @@ func (p *parser) comp() string {
 	return command
 }
 
-// jump returns the jump mneminoc in the current command.
+// jump returns the jump mnemonic in the current command.
 // Should only be called when commandType() returns a C_COMMAND
 func (p *parser) jump() string {
 	jump := ""

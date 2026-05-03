@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -15,7 +16,8 @@ const (
 )
 
 type assembler struct {
-	parser *parser
+	parser      *parser
+	symbolTable symbolTable
 }
 
 func NewAssembler(argument string) (*assembler, error) {
@@ -25,7 +27,8 @@ func NewAssembler(argument string) (*assembler, error) {
 	}
 
 	return &assembler{
-		parser: p,
+		parser:      p,
+		symbolTable: NewSymbolTable(),
 	}, nil
 }
 
@@ -33,7 +36,12 @@ func (a *assembler) processACommand() string {
 	symbol := a.parser.symbol()
 	n, err := strconv.Atoi(symbol)
 	if err != nil {
-		log.Fatalf("non-numeric symbol %q: %v:", symbol, err)
+		if !a.symbolTable.contains(symbol) {
+			a.symbolTable.addEntry(symbol, a.symbolTable.nextSymbolAddress)
+			a.symbolTable.nextSymbolAddress++
+		}
+
+		n = a.symbolTable.getAddress(symbol)
 	}
 
 	return fmt.Sprintf("0%015b", n)
@@ -47,52 +55,88 @@ func (a *assembler) processCCommand() string {
 	return "111" + comp + dest + jump
 }
 
-// Hack Assembler
-func main() {
-	if len(os.Args) < 2 {
-		log.Fatal("must provide .asm file as an argument")
+func (a *assembler) firstPass() {
+	romAddr := 0
+	for a.parser.hasMoreCommands() {
+		a.parser.advance()
+
+		switch a.parser.commandType() {
+		case L_COMMAND:
+			symbol := a.parser.symbol()
+			if !a.symbolTable.contains(symbol) {
+				a.symbolTable.addEntry(symbol, romAddr)
+			}
+		case A_COMMAND, C_COMMAND:
+			romAddr++
+		}
 	}
 
-	argument := os.Args[1]
+	a.parser.reset()
+}
 
-	assembler, err := NewAssembler(argument)
-	if err != nil {
-		log.Fatalf("failed to iniialize assember: %v", err)
-	}
-
+func (a *assembler) secondPass() error {
 	var sb strings.Builder
-	for assembler.parser.hasMoreCommands() {
-		assembler.parser.advance()
+	first := true
+	for a.parser.hasMoreCommands() {
+		a.parser.advance()
 
 		bLine := ""
-		switch assembler.parser.commandType() {
+		switch a.parser.commandType() {
 		case A_COMMAND:
-			bLine = assembler.processACommand()
+			bLine = a.processACommand()
 		case C_COMMAND:
-			bLine = assembler.processCCommand()
+			bLine = a.processCCommand()
 		}
 
 		if bLine == "" {
 			continue
 		}
 
-		sb.WriteString(bLine)
-		if assembler.parser.hasMoreCommands() {
+		if !first {
 			sb.WriteByte('\n')
 		}
+		sb.WriteString(bLine)
+		first = false
 	}
 
-	// bytes reader should never return an error but including in case the implmenetation changes and as a best practice
-	if err = assembler.parser.scanner.Err(); err != nil {
-		log.Fatalf("Scan error on exit: %v", err)
+	// bytes reader should never return an error but including in case the implementation changes and as a best practice
+	if err := a.parser.scanner.Err(); err != nil {
+		return fmt.Errorf("scan error on exit: %v", err)
 	}
 
-	hackFile := filepath.Join(assembler.parser.filePath, assembler.parser.hackFileName)
+	hackFile := filepath.Join(a.parser.filePath, a.parser.hackFileName)
 
-	err = os.WriteFile(hackFile, []byte(sb.String()), 0644)
+	err := os.WriteFile(hackFile, []byte(sb.String()), 0o644)
 	if err != nil {
-		log.Fatalf("failed to write hack file: %v", err)
+		return fmt.Errorf("failed to write hack file: %v", err)
 	}
 
 	log.Printf("Successfully wrote file: %s", hackFile)
+
+	return nil
+}
+
+func main() {
+	if err := run(os.Args); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// Hack Assembler
+func run(args []string) error {
+	if len(args) < 2 {
+		return errors.New("must provide .asm file as an argument")
+	}
+
+	argument := args[1]
+
+	// initialize
+	assembler, err := NewAssembler(argument)
+	if err != nil {
+		return fmt.Errorf("failed to initialize assembler: %v", err)
+	}
+
+	assembler.firstPass()
+
+	return assembler.secondPass()
 }
