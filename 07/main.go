@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strings"
 )
 
 type VMTranslator struct {
@@ -12,13 +13,24 @@ type VMTranslator struct {
 	CodeWriter *CodeWriter
 }
 
-func NewVMTranslator(argument string) (*VMTranslator, error) {
+func NewVMTranslator(args []string) (*VMTranslator, error) {
+	if len(args) < 2 {
+		return nil, errors.New("must provide .vm file as an argument")
+	}
+
+	argument := args[1]
+
+	var initSPManually bool
+	if len(args) > 2 && strings.HasSuffix(args[2], "initSP") { // matches -initSP
+		initSPManually = true
+	}
+
 	p, err := NewParser(argument)
 	if err != nil {
 		return nil, err
 	}
 
-	cw, err := NewCodeWriter(argument)
+	cw, err := NewCodeWriter(argument, initSPManually)
 	if err != nil {
 		return nil, err
 	}
@@ -63,13 +75,7 @@ func (vt *VMTranslator) translate() error {
 }
 
 func run(args []string) error {
-	if len(args) < 2 {
-		return errors.New("must provide .vm file as an argument")
-	}
-
-	argument := args[1]
-
-	vt, err := NewVMTranslator(argument)
+	vt, err := NewVMTranslator(args)
 	if err != nil {
 		return fmt.Errorf("failed to initialize vm translator: %v", err)
 	}

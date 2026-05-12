@@ -91,10 +91,8 @@ func (p *Parser) CommandType() int {
 		return C_PUSH
 	case strings.HasPrefix(p.CurrentCommand, "pop"):
 		return C_POP
-	case strings.HasPrefix(p.CurrentCommand, "add"):
-		return C_ARITHMETIC
 	default:
-		return -1
+		return C_ARITHMETIC
 	}
 }
 
