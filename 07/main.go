@@ -59,7 +59,12 @@ func (vt *VMTranslator) translate() error {
 				return err
 			}
 		case C_PUSH, C_POP:
-			err := vt.CodeWriter.WritePushPop(cType, vt.Parser.Arg1(), vt.Parser.Arg2())
+			arg2, err := vt.Parser.Arg2()
+			if err != nil {
+				return err
+			}
+
+			err = vt.CodeWriter.WritePushPop(cType, vt.Parser.Arg1(), arg2)
 			if err != nil {
 				return err
 			}

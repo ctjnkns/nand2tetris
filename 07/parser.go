@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"bytes"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -112,23 +113,23 @@ func (p *Parser) Arg1() string {
 	}
 }
 
-func (p *Parser) Arg2() int {
+func (p *Parser) Arg2() (int, error) {
 	cType := p.CommandType()
 	switch cType {
 	case C_ARITHMETIC:
-		return -1 // unexpected
+		return 0, errors.New("cannot call Arg2 for C_ARITHMETIC commands")
 	case C_POP, C_PUSH:
 		fields := strings.Fields(p.CurrentCommand)
 		if len(fields) < 3 {
-			return -2 // unexpected
+			return 0, errors.New("index must be provided for pop and push commands")
 		}
 		arg2, err := strconv.Atoi(fields[2])
 		if err != nil {
-			return -3
+			return 0, fmt.Errorf("index must be an int, recieved: %s", fields[2])
 		}
-		return arg2
+		return arg2, nil
 	default:
-		return -4
+		return 0, fmt.Errorf("unrecognized command type provided: %d", cType)
 	}
 }
 
