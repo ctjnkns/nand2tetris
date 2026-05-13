@@ -20,7 +20,6 @@ var segmentDict = map[string]string{
 	"argument": "ARG",
 	"this":     "THIS",
 	"that":     "THAT",
-	"temp":     "5",
 }
 
 var directDict = map[string]string{
@@ -209,6 +208,8 @@ func (cw *CodeWriter) WritePushPop(command int, segment string, index int) error
 			return cw.pushConstant(index)
 		case "temp":
 			return cw.pushDirect(segment, index)
+		case "pointer":
+			return cw.pushPointer(segment, index)
 		default:
 			return cw.pushSegment(segment, index)
 		}
@@ -216,12 +217,40 @@ func (cw *CodeWriter) WritePushPop(command int, segment string, index int) error
 		switch segment {
 		case "temp":
 			return cw.popDirect(segment, index)
+		case "pointer":
+			return cw.popPointer(segment, index)
 		default:
 			return cw.popSegment(segment, index)
 		}
 	default:
 		return fmt.Errorf("received invalid PushPop command: %d", command)
 	}
+}
+
+func (cw *CodeWriter) pushPointer(segment string, index int) error {
+	var virtSeg string
+	switch index {
+	case 0:
+		virtSeg = "THIS"
+	case 1:
+		virtSeg = "THAT"
+	default:
+		return fmt.Errorf("received unsupported pointer index: %d", index)
+	}
+
+	lines := []string{
+		fmt.Sprintf("// push %s %d", segment, index),
+		fmt.Sprintf("@%s", virtSeg),
+		"D=M", // Save the value in the full virt seg location to D
+
+		"@SP",
+		"A=M",
+		"M=D", // save the locally saved value to the stack
+		"@SP",
+		"M=M+1", // bump the stack pointer
+	}
+
+	return cw.writeLines(lines)
 }
 
 func (cw *CodeWriter) pushConstant(index int) error {
@@ -284,6 +313,32 @@ func (cw *CodeWriter) pushSegment(segment string, index int) error {
 		"M=D", // save the locally saved value to the stack
 		"@SP",
 		"M=M+1", // bump the stack pointer
+	}
+
+	return cw.writeLines(lines)
+}
+
+func (cw *CodeWriter) popPointer(segment string, index int) error {
+	var virtSeg string
+	switch index {
+	case 0:
+		virtSeg = "THIS"
+	case 1:
+		virtSeg = "THAT"
+	default:
+		return fmt.Errorf("received unsupported pointer index: %d", index)
+	}
+
+	lines := []string{
+		fmt.Sprintf("// pop %s %d", segment, index),
+
+		"@SP",   // Get the SP pointer
+		"M=M-1", // decrement SP pointer to get to the active location
+		"A=M",
+		"D=M", // save the stack value to D
+
+		fmt.Sprintf("@%s", virtSeg), // get the virt seg register
+		"M=D",                       // Set virt seg Index to the value popped from the stack
 	}
 
 	return cw.writeLines(lines)
