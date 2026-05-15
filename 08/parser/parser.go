@@ -77,7 +77,7 @@ func (p *Parser) Advance() {
 	for p.scanner.Scan() {
 		line := strings.TrimSpace(p.scanner.Text())
 		if i := strings.Index(line, "//"); i >= 0 {
-			line = line[:i]
+			line = strings.TrimSpace(line[:i])
 		}
 
 		if line == "" {
@@ -100,6 +100,8 @@ func (p *Parser) CommandType() int {
 		return C_LABEL
 	case strings.HasPrefix(p.CurrentCommand, "if-goto"):
 		return C_IF
+	case strings.HasPrefix(p.CurrentCommand, "goto"):
+		return C_GOTO
 	default:
 		return C_ARITHMETIC
 	}
@@ -110,7 +112,7 @@ func (p *Parser) Arg1() string {
 	switch cType {
 	case C_ARITHMETIC:
 		return p.CurrentCommand
-	case C_POP, C_PUSH, C_LABEL, C_IF:
+	case C_POP, C_PUSH, C_LABEL, C_IF, C_GOTO:
 		fields := strings.Fields(p.CurrentCommand)
 		if len(fields) < 2 {
 			return "" // unexpected
