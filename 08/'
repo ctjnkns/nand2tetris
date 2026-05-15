@@ -82,25 +82,16 @@ func (vt *VMTranslator) translate() error {
 				return err
 			}
 
-			err = vt.CodeWriter.WritePushPop(cType, vt.Parser.Arg1(), arg2)
-			if err != nil {
-				return err
-			}
+			return vt.CodeWriter.WritePushPop(cType, vt.Parser.Arg1(), arg2)
 		case parser.C_FUNCTION:
 			arg2, err := vt.Parser.Arg2()
 			if err != nil {
 				return err
 			}
 
-			err = vt.CodeWriter.WriteFunction(vt.Parser.Arg1(), arg2)
-			if err != nil {
-				return err
-			}
+			return vt.CodeWriter.WriteFunction(vt.Parser.Arg1(), arg2)
 		case parser.C_RETURN:
-			err := vt.CodeWriter.WriteReturn()
-			if err != nil {
-				return err
-			}
+			return vt.CodeWriter.WriteReturn()
 		}
 	}
 

@@ -1,0 +1,99 @@
+package codewriter
+
+import "fmt"
+
+func (cw *CodeWriter) WriteFunction(functionName string, nVars int) error {
+	lines := []string{
+		fmt.Sprintf("// function %s %d", functionName, nVars),
+		fmt.Sprintf("(%s)", functionName),
+	}
+
+	pushLocalLines := []string{
+		"@SP", // init the number of local vars to 0
+		"A=M",
+		"M=0",
+		"@SP",
+		"M=M+1",
+	}
+	for range nVars {
+		lines = append(lines, pushLocalLines...)
+	}
+
+	return cw.writeLines(lines)
+}
+
+func (cw *CodeWriter) WriteReturn() error {
+	lines := []string{
+		"// return",
+		// frame = lcl
+		"@LCL", // save current LCL to temp storage so it's not lost
+		"D=M",
+		"@R13",
+		"M=D",
+
+		// retAddr = *(frame - 5)
+		"@5", // return address is LCL - 5
+		"D=A",
+		"@R13",
+		"A=M-D", // Get LCL - 5 and save to the D register
+		"D=M",
+		"@R14",
+		"M=D", // save return address to R14
+
+		// *ARG = pop()
+		"@SP", // pop off stack and save to D register, this is the return value
+		"M=M-1",
+		"A=M",
+		"D=M",
+		"@ARG",
+		"A=M",
+		"M=D", // Save the return value from the D register into the ARG address location
+
+		// SP = ARG+1
+		"@ARG",
+		"D=M+1",
+		"@SP",
+		"M=D",
+
+		// THAT = *(frame - 1)
+		"@R13", // frame
+		"A=M-1",
+		"D=M",
+		"@THAT",
+		"M=D",
+
+		// THIS = *(frame-2)
+		"@2",
+		"D=A",
+		"@R13",
+		"A=M-D",
+		"D=M",
+		"@THIS",
+		"M=D",
+
+		// ARG = *(frame - 3)
+		"@3",
+		"D=A",
+		"@R13",
+		"A=M-D",
+		"D=M",
+		"@ARG",
+		"M=D",
+
+		// LCL = *(frame - 4)
+		"@4",
+		"D=A",
+		"@R13",
+		"A=M-D",
+		"D=M",
+		"@LCL",
+		"M=D",
+
+		// goto retAddr
+		"@R14",
+		"A=M",
+		"0;JMP",
+	}
+
+	return cw.writeLines(lines)
+}
