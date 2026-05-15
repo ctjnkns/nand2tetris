@@ -15,13 +15,13 @@ const (
 	C_ARITHMETIC = iota
 	C_PUSH
 	C_POP
+	C_LABEL
+	C_GOTO
+	C_IF
 	/*
-		C_LABEL
-		C_GOTO
-		C_IF
-			C_FUNCTION
-			C_RETURN
-			C_CALL
+		C_FUNCTION
+		C_RETURN
+		C_CALL
 	*/
 )
 
@@ -96,6 +96,10 @@ func (p *Parser) CommandType() int {
 		return C_PUSH
 	case strings.HasPrefix(p.CurrentCommand, "pop"):
 		return C_POP
+	case strings.HasPrefix(p.CurrentCommand, "label"):
+		return C_LABEL
+	case strings.HasPrefix(p.CurrentCommand, "if-goto"):
+		return C_IF
 	default:
 		return C_ARITHMETIC
 	}
@@ -106,7 +110,7 @@ func (p *Parser) Arg1() string {
 	switch cType {
 	case C_ARITHMETIC:
 		return p.CurrentCommand
-	case C_POP, C_PUSH:
+	case C_POP, C_PUSH, C_LABEL, C_IF:
 		fields := strings.Fields(p.CurrentCommand)
 		if len(fields) < 2 {
 			return "" // unexpected
