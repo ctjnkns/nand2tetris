@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
+	"strings"
 )
 
 type CodeWriter struct {
@@ -17,7 +19,15 @@ type CodeWriter struct {
 	callCount       int
 }
 
-func NewCodeWriter(asmPath string, bootstrap bool) (*CodeWriter, error) {
+type CodeWriterOption func(*CodeWriter)
+
+func WithWriter(w *bufio.Writer) CodeWriterOption {
+	return func(cw *CodeWriter) {
+		cw.writer = w
+	}
+}
+
+func NewCodeWriter(asmPath string, bootstrap bool, opts ...CodeWriterOption) (*CodeWriter, error) {
 	f, err := os.Create(asmPath)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create .asm file: %v", err)
@@ -26,13 +36,19 @@ func NewCodeWriter(asmPath string, bootstrap bool) (*CodeWriter, error) {
 	w := bufio.NewWriter(f)
 
 	cw := &CodeWriter{
-		file:    f,
-		writer:  w,
-		asmFile: asmPath,
+		file:         f,
+		writer:       w,
+		asmFile:      asmPath,
+		staticPrefix: strings.TrimSuffix(filepath.Base(asmPath), ".asm"),
+	}
+
+	for _, opt := range opts {
+		opt(cw)
 	}
 
 	if bootstrap {
 		if err := cw.WriteInit(); err != nil {
+			f.Close()
 			return nil, err
 		}
 	}

@@ -1,0 +1,2 @@
+push constant 0
+pop pointer 5

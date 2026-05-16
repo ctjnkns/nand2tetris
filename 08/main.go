@@ -26,7 +26,7 @@ func NewVMTranslator(args []string) (*VMTranslator, error) {
 
 	argument := args[1]
 
-	vmFileNames, bootstrap, asmPath, err := resolveArgumnet(argument)
+	vmFileNames, bootstrap, asmPath, err := resolveArgument(argument)
 	if err != nil {
 		return nil, fmt.Errorf("unable to open files: %v", err)
 	}
@@ -52,7 +52,7 @@ func NewVMTranslator(args []string) (*VMTranslator, error) {
 	}, nil
 }
 
-func resolveArgumnet(argument string) (vmFiles []string, bootstrap bool, asmPath string, err error) {
+func resolveArgument(argument string) (vmFiles []string, bootstrap bool, asmPath string, err error) {
 	info, err := os.Stat(argument)
 	if err != nil {
 		return nil, false, "", err
@@ -71,16 +71,10 @@ func resolveArgumnet(argument string) (vmFiles []string, bootstrap bool, asmPath
 
 		base := filepath.Base(clean)
 		asmPath = filepath.Join(clean, base+".asm")
+		bootstrap = true
 	} else {
 		vmFiles = []string{argument}
 		asmPath = strings.TrimSuffix(argument, parser.VMExtension) + asmExtension
-	}
-
-	for _, f := range vmFiles {
-		if filepath.Base(f) == "Sys.vm" {
-			bootstrap = true
-			break
-		}
 	}
 
 	return vmFiles, bootstrap, asmPath, nil
@@ -98,64 +92,47 @@ func (vt *VMTranslator) translate() error {
 		for curParser.HasMoreLines() {
 			curParser.Advance()
 
-			cType := curParser.CommandType()
+			cType, err := curParser.CommandType()
+			if err != nil {
+				return err
+			}
+
+			var arg1 string
+			if cType != parser.C_RETURN {
+				arg1, err = curParser.Arg1()
+				if err != nil {
+					return err
+				}
+			}
+
+			var arg2 int
+			if cType == parser.C_PUSH || cType == parser.C_POP || cType == parser.C_CALL || cType == parser.C_FUNCTION {
+				arg2, err = curParser.Arg2()
+				if err != nil {
+					return err
+				}
+			}
+
 			switch cType {
 			case parser.C_ARITHMETIC:
-				err := vt.CodeWriter.WriteArithmetic(curParser.Arg1())
-				if err != nil {
-					return err
-				}
+				err = vt.CodeWriter.WriteArithmetic(arg1)
 			case parser.C_LABEL:
-				err := vt.CodeWriter.WriteLabel(curParser.Arg1())
-				if err != nil {
-					return err
-				}
+				err = vt.CodeWriter.WriteLabel(arg1)
 			case parser.C_IF:
-				err := vt.CodeWriter.WriteIf(curParser.Arg1())
-				if err != nil {
-					return err
-				}
+				err = vt.CodeWriter.WriteIf(arg1)
 			case parser.C_GOTO:
-				err := vt.CodeWriter.WriteGoto(curParser.Arg1())
-				if err != nil {
-					return err
-				}
+				err = vt.CodeWriter.WriteGoto(arg1)
 			case parser.C_PUSH, parser.C_POP:
-				arg2, err := curParser.Arg2()
-				if err != nil {
-					return err
-				}
-
-				err = vt.CodeWriter.WritePushPop(cType, curParser.Arg1(), arg2)
-				if err != nil {
-					return err
-				}
+				err = vt.CodeWriter.WritePushPop(cType, arg1, arg2)
 			case parser.C_CALL:
-				arg2, err := curParser.Arg2()
-				if err != nil {
-					return err
-				}
-
-				err = vt.CodeWriter.WriteCall(curParser.Arg1(), arg2)
-				if err != nil {
-					return err
-				}
-
+				err = vt.CodeWriter.WriteCall(arg1, arg2)
 			case parser.C_FUNCTION:
-				arg2, err := curParser.Arg2()
-				if err != nil {
-					return err
-				}
-
-				err = vt.CodeWriter.WriteFunction(curParser.Arg1(), arg2)
-				if err != nil {
-					return err
-				}
+				err = vt.CodeWriter.WriteFunction(arg1, arg2)
 			case parser.C_RETURN:
-				err := vt.CodeWriter.WriteReturn()
-				if err != nil {
-					return err
-				}
+				err = vt.CodeWriter.WriteReturn()
+			}
+			if err != nil {
+				return err
 			}
 		}
 		// bytes reader should never return an error but including in case the implementation changes and as a best practice

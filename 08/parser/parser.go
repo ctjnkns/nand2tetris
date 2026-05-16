@@ -8,6 +8,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -28,8 +29,20 @@ const (
 	VMExtension = ".vm"
 )
 
+var arithmeticCommands = []string{
+	"add",
+	"sub",
+	"neg",
+	"eq",
+	"gt",
+	"lt",
+	"and",
+	"or",
+	"not",
+}
+
 type Parser struct {
-	scanner        *bufio.Scanner
+	Scanner        *bufio.Scanner
 	CurrentCommand string
 	NextCommand    string
 	FileName       string
@@ -48,7 +61,7 @@ func NewParser(argument string) (*Parser, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 
 	p := &Parser{
-		scanner:  scanner,
+		Scanner:  scanner,
 		FileName: strings.TrimSuffix(filepath.Base(argument), VMExtension),
 	}
 
@@ -75,8 +88,8 @@ func (p *Parser) Advance() {
 	p.CurrentCommand = p.NextCommand
 
 	p.NextCommand = ""
-	for p.scanner.Scan() {
-		line := strings.TrimSpace(p.scanner.Text())
+	for p.Scanner.Scan() {
+		line := strings.TrimSpace(p.Scanner.Text())
 		if i := strings.Index(line, "//"); i >= 0 {
 			line = strings.TrimSpace(line[:i])
 		}
@@ -91,47 +104,57 @@ func (p *Parser) Advance() {
 	}
 }
 
-func (p *Parser) CommandType() int {
+func (p *Parser) CommandType() (int, error) {
 	switch {
 	case strings.HasPrefix(p.CurrentCommand, "push"):
-		return C_PUSH
+		return C_PUSH, nil
 	case strings.HasPrefix(p.CurrentCommand, "pop"):
-		return C_POP
+		return C_POP, nil
 	case strings.HasPrefix(p.CurrentCommand, "label"):
-		return C_LABEL
+		return C_LABEL, nil
 	case strings.HasPrefix(p.CurrentCommand, "if-goto"):
-		return C_IF
+		return C_IF, nil
 	case strings.HasPrefix(p.CurrentCommand, "goto"):
-		return C_GOTO
+		return C_GOTO, nil
 	case strings.HasPrefix(p.CurrentCommand, "call"):
-		return C_CALL
+		return C_CALL, nil
 	case strings.HasPrefix(p.CurrentCommand, "function"):
-		return C_FUNCTION
+		return C_FUNCTION, nil
 	case strings.HasPrefix(p.CurrentCommand, "return"):
-		return C_RETURN
+		return C_RETURN, nil
+	case slices.Contains(arithmeticCommands, p.CurrentCommand):
+		return C_ARITHMETIC, nil
 	default:
-		return C_ARITHMETIC
+		return 0, fmt.Errorf("unknown command type: %s", p.CurrentCommand)
 	}
 }
 
-func (p *Parser) Arg1() string {
-	cType := p.CommandType()
+func (p *Parser) Arg1() (string, error) {
+	cType, err := p.CommandType()
+	if err != nil {
+		return "", err
+	}
+
 	switch cType {
 	case C_ARITHMETIC:
-		return p.CurrentCommand
+		return p.CurrentCommand, nil
 	case C_POP, C_PUSH, C_LABEL, C_IF, C_GOTO, C_CALL, C_FUNCTION:
 		fields := strings.Fields(p.CurrentCommand)
 		if len(fields) < 2 {
-			return "" // unexpected
+			return "", fmt.Errorf("arg 1: invalid vm command: %s", p.CurrentCommand) // unexpected
 		}
-		return fields[1]
+		return fields[1], nil
 	default:
-		return ""
+		return "", fmt.Errorf("arg 1: unknown command type: %d", cType)
 	}
 }
 
 func (p *Parser) Arg2() (int, error) {
-	cType := p.CommandType()
+	cType, err := p.CommandType()
+	if err != nil {
+		return 0, err
+	}
+
 	switch cType {
 	case C_POP, C_PUSH, C_CALL, C_FUNCTION:
 		fields := strings.Fields(p.CurrentCommand)
@@ -140,7 +163,7 @@ func (p *Parser) Arg2() (int, error) {
 		}
 		arg2, err := strconv.Atoi(fields[2])
 		if err != nil {
-			return 0, fmt.Errorf("index must be an int, recieved: %s", fields[2])
+			return 0, fmt.Errorf("index must be an int, received: %s", fields[2])
 		}
 		return arg2, nil
 	default:
@@ -150,5 +173,5 @@ func (p *Parser) Arg2() (int, error) {
 
 func (p *Parser) Err() error {
 	// bytes reader should never return an error but including in case the implementation changes and as a best practice
-	return p.scanner.Err()
+	return p.Scanner.Err()
 }

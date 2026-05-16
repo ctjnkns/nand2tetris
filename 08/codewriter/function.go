@@ -53,7 +53,7 @@ func (cw *CodeWriter) WriteCall(functionName string, numArgs int) error {
 		"@SP",
 		"M=M+1",
 
-		"@SP", // repositoin arg
+		"@SP", // reposition arg
 		"D=M",
 		"@5",
 		"D=D-A", // SP - 5
@@ -70,7 +70,7 @@ func (cw *CodeWriter) WriteCall(functionName string, numArgs int) error {
 		fmt.Sprintf("@%s", functionName),
 		"0;JMP", // goto function
 
-		fmt.Sprintf("(%s)", returnLabel), // delcare the returnaddress label location
+		fmt.Sprintf("(%s)", returnLabel), // declare the returnaddress label location
 	}
 
 	return cw.writeLines(lines)
