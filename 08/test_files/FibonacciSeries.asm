@@ -108,7 +108,7 @@ D=M
 A=M
 M=D
 // label LOOP
-(LOOP)
+($LOOP)
 // push argument 0
 @0
 D=A
@@ -120,18 +120,18 @@ A=M
 M=D
 @SP
 M=M+1
-// if-goto COMPUTE_ELEMENT
+// if-goto $COMPUTE_ELEMENT
 @SP
 M=M-1
 A=M
 D=M
-@COMPUTE_ELEMENT
+@$COMPUTE_ELEMENT
 D;JNE
 // goto END
-@END
+@$END
 0;JMP
 // label COMPUTE_ELEMENT
-(COMPUTE_ELEMENT)
+($COMPUTE_ELEMENT)
 // push that 0
 @0
 D=A
@@ -260,7 +260,7 @@ D=M
 A=M
 M=D
 // goto LOOP
-@LOOP
+@$LOOP
 0;JMP
 // label END
-(END)
+($END)

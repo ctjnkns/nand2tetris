@@ -22,7 +22,7 @@ D=M
 A=M
 M=D
 // label LOOP
-(LOOP)
+($LOOP)
 // push argument 0
 @0
 D=A
@@ -127,12 +127,12 @@ A=M
 M=D
 @SP
 M=M+1
-// if-goto LOOP
+// if-goto $LOOP
 @SP
 M=M-1
 A=M
 D=M
-@LOOP
+@$LOOP
 D;JNE
 // push local 0
 @0

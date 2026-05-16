@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -20,9 +21,7 @@ const (
 	C_IF
 	C_FUNCTION
 	C_RETURN
-	/*
-		C_CALL
-	*/
+	C_CALL
 )
 
 const (
@@ -33,6 +32,7 @@ type Parser struct {
 	scanner        *bufio.Scanner
 	CurrentCommand string
 	NextCommand    string
+	FileName       string
 }
 
 func NewParser(argument string) (*Parser, error) {
@@ -48,7 +48,8 @@ func NewParser(argument string) (*Parser, error) {
 	scanner := bufio.NewScanner(bytes.NewReader(data))
 
 	p := &Parser{
-		scanner: scanner,
+		scanner:  scanner,
+		FileName: strings.TrimSuffix(filepath.Base(argument), VMExtension),
 	}
 
 	p.Advance()
@@ -102,6 +103,8 @@ func (p *Parser) CommandType() int {
 		return C_IF
 	case strings.HasPrefix(p.CurrentCommand, "goto"):
 		return C_GOTO
+	case strings.HasPrefix(p.CurrentCommand, "call"):
+		return C_CALL
 	case strings.HasPrefix(p.CurrentCommand, "function"):
 		return C_FUNCTION
 	case strings.HasPrefix(p.CurrentCommand, "return"):
@@ -116,7 +119,7 @@ func (p *Parser) Arg1() string {
 	switch cType {
 	case C_ARITHMETIC:
 		return p.CurrentCommand
-	case C_POP, C_PUSH, C_LABEL, C_IF, C_GOTO, C_FUNCTION:
+	case C_POP, C_PUSH, C_LABEL, C_IF, C_GOTO, C_CALL, C_FUNCTION:
 		fields := strings.Fields(p.CurrentCommand)
 		if len(fields) < 2 {
 			return "" // unexpected
@@ -130,7 +133,7 @@ func (p *Parser) Arg1() string {
 func (p *Parser) Arg2() (int, error) {
 	cType := p.CommandType()
 	switch cType {
-	case C_POP, C_PUSH, C_FUNCTION:
+	case C_POP, C_PUSH, C_CALL, C_FUNCTION:
 		fields := strings.Fields(p.CurrentCommand)
 		if len(fields) < 3 {
 			return 0, errors.New("index must be provided for pop and push commands")

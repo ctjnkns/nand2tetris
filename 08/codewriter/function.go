@@ -2,7 +2,82 @@ package codewriter
 
 import "fmt"
 
+func (cw *CodeWriter) WriteCall(functionName string, numArgs int) error {
+	caller := cw.currentFunction
+	if caller == "" {
+		caller = "Bootstrap"
+	}
+
+	returnLabel := fmt.Sprintf("%s$ret.%d", caller, cw.callCount)
+	cw.callCount++
+
+	lines := []string{
+		fmt.Sprintf("// call %s %d", functionName, numArgs),
+		fmt.Sprintf("@%s", returnLabel), // push the return label to the stack
+		"D=A",
+		"@SP",
+		"A=M",
+		"M=D",
+		"@SP", // bump SP
+		"M=M+1",
+
+		"@LCL", // push LCL to stack
+		"D=M",
+		"@SP",
+		"A=M",
+		"M=D",
+		"@SP",
+		"M=M+1",
+
+		"@ARG", // push ARG to stack
+		"D=M",
+		"@SP",
+		"A=M",
+		"M=D",
+		"@SP",
+		"M=M+1",
+
+		"@THIS", // push THIS to stack
+		"D=M",
+		"@SP",
+		"A=M",
+		"M=D",
+		"@SP",
+		"M=M+1",
+
+		"@THAT", // push THIS to stack
+		"D=M",
+		"@SP",
+		"A=M",
+		"M=D",
+		"@SP",
+		"M=M+1",
+
+		"@SP", // repositoin arg
+		"D=M",
+		"@5",
+		"D=D-A", // SP - 5
+		fmt.Sprintf("@%d", numArgs),
+		"D=D-A", // SP - 5 - numArgs
+		"@ARG",
+		"M=D",
+
+		"@SP", // reposition lcl
+		"D=M",
+		"@LCL",
+		"M=D",
+
+		fmt.Sprintf("@%s", functionName),
+		"0;JMP", // goto function
+
+		fmt.Sprintf("(%s)", returnLabel), // delcare the returnaddress label location
+	}
+
+	return cw.writeLines(lines)
+}
+
 func (cw *CodeWriter) WriteFunction(functionName string, nVars int) error {
+	cw.currentFunction = functionName
 	lines := []string{
 		fmt.Sprintf("// function %s %d", functionName, nVars),
 		fmt.Sprintf("(%s)", functionName),

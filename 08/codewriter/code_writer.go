@@ -5,33 +5,20 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"path/filepath"
-	"strings"
-
-	"github.com/ctjnkns/nand2tetris/08/vmtranslator/parser"
-)
-
-const (
-	asmExtension = ".asm"
 )
 
 type CodeWriter struct {
-	file         *os.File
-	writer       *bufio.Writer
-	asmFile      string
-	staticPrefix string
-	labelNum     int
+	file            *os.File
+	writer          *bufio.Writer
+	asmFile         string
+	staticPrefix    string
+	labelNum        int
+	currentFunction string
+	callCount       int
 }
 
-func NewCodeWriter(argument string, initSPManually bool) (*CodeWriter, error) {
-	fileName := filepath.Base(argument)
-	filePath := filepath.Dir(argument)
-
-	trimmedFileName := strings.TrimSuffix(fileName, parser.VMExtension)
-	asmFileName := trimmedFileName + asmExtension
-
-	asmFile := filepath.Join(filePath, asmFileName)
-	f, err := os.Create(asmFile)
+func NewCodeWriter(asmPath string, bootstrap bool) (*CodeWriter, error) {
+	f, err := os.Create(asmPath)
 	if err != nil {
 		return nil, fmt.Errorf("unable to create .asm file: %v", err)
 	}
@@ -39,15 +26,13 @@ func NewCodeWriter(argument string, initSPManually bool) (*CodeWriter, error) {
 	w := bufio.NewWriter(f)
 
 	cw := &CodeWriter{
-		file:         f,
-		writer:       w,
-		asmFile:      asmFile,
-		staticPrefix: trimmedFileName,
+		file:    f,
+		writer:  w,
+		asmFile: asmPath,
 	}
 
-	if initSPManually {
-		err := cw.initSP()
-		if err != nil {
+	if bootstrap {
+		if err := cw.WriteInit(); err != nil {
 			return nil, err
 		}
 	}
@@ -55,7 +40,11 @@ func NewCodeWriter(argument string, initSPManually bool) (*CodeWriter, error) {
 	return cw, nil
 }
 
-func (cw *CodeWriter) initSP() error {
+func (cw *CodeWriter) SetFileName(name string) {
+	cw.staticPrefix = name
+}
+
+func (cw *CodeWriter) WriteInit() error {
 	lines := []string{
 		"// init SP",
 		"@256",
@@ -64,7 +53,16 @@ func (cw *CodeWriter) initSP() error {
 		"M=D",
 	}
 
-	return cw.writeLines(lines)
+	err := cw.writeLines(lines)
+	if err != nil {
+		return err
+	}
+
+	if err := cw.WriteCall("Sys.init", 0); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (cw *CodeWriter) writeLines(lines []string) error {
