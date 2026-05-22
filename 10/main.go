@@ -3,12 +3,14 @@ package main
 import (
 	"bufio"
 	"errors"
+	"flag"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/ctjnkns/nand2tetris/10/jackanalyzer/compilationengine"
 	"github.com/ctjnkns/nand2tetris/10/jackanalyzer/tokenizer"
 )
 
@@ -18,20 +20,22 @@ const (
 
 type Analyzer struct {
 	tokenWriters []*tokenWriter
+	tokenizeMode bool
 }
 
 type tokenWriter struct {
-	tokenizer *tokenizer.Tokenizer
-	xmlFile   *os.File
-	writer    *bufio.Writer
+	tokenizer         *tokenizer.Tokenizer
+	compilationEngine compilationengine.Compiler
+	xmlFile           *os.File
+	writer            *bufio.Writer
 }
 
-func NewAnalyzer(args []string) (*Analyzer, error) {
-	if len(args) < 2 {
+func NewAnalyzer(args []string, tokenize bool) (*Analyzer, error) {
+	if len(args) < 1 {
 		return nil, errors.New("must provide .jack file or folder as an argument")
 	}
 
-	argument := args[1]
+	argument := args[0]
 
 	info, err := os.Stat(argument)
 	if err != nil {
@@ -58,7 +62,8 @@ func NewAnalyzer(args []string) (*Analyzer, error) {
 		jackFileNames = []string{clean}
 	}
 
-	a := &Analyzer{}
+	a := &Analyzer{tokenizeMode: tokenize}
+
 	for _, jackFile := range jackFileNames {
 		if err := a.addFile(jackFile); err != nil {
 			a.Close()
@@ -77,7 +82,12 @@ func (a *Analyzer) addFile(jackFile string) error {
 
 	trimmedFilename := strings.TrimSuffix(jackFile, tokenizer.JackExtension)
 
-	xmlFileName := trimmedFilename + xmlExtension
+	suffix := xmlExtension
+	if a.tokenizeMode {
+		suffix = "T" + xmlExtension
+	}
+
+	xmlFileName := trimmedFilename + suffix
 
 	xmlFile, err := os.Create(xmlFileName)
 	if err != nil {
@@ -86,10 +96,13 @@ func (a *Analyzer) addFile(jackFile string) error {
 
 	w := bufio.NewWriter(xmlFile)
 
+	ce := compilationengine.NewCompilationEngine(t, w)
+
 	tw := &tokenWriter{
-		tokenizer: t,
-		xmlFile:   xmlFile,
-		writer:    w,
+		tokenizer:         t,
+		compilationEngine: ce,
+		xmlFile:           xmlFile,
+		writer:            w,
 	}
 
 	a.tokenWriters = append(a.tokenWriters, tw)
@@ -98,22 +111,37 @@ func (a *Analyzer) addFile(jackFile string) error {
 }
 
 func main() {
-	if err := run(os.Args); err != nil {
+	if err := run(os.Args[1:]); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func run(args []string) error {
-	a, err := NewAnalyzer(args)
+	fs := flag.NewFlagSet("jackanalyzer", flag.ContinueOnError)
+	fs.Usage = func() {
+		fmt.Fprintf(fs.Output(), "Usage: %s [-tokenize] <file.jack|dir>\n", fs.Name())
+		fs.PrintDefaults()
+	}
+	tokenize := fs.Bool("tokenize", false, "emit T.xml token file")
+
+	if err := fs.Parse(args); err != nil {
+		return err
+	}
+
+	a, err := NewAnalyzer(fs.Args(), *tokenize)
 	if err != nil {
 		return err
 	}
 	defer a.Close()
 
+	if *tokenize {
+		return a.tokenize()
+	}
+
 	return a.compile()
 }
 
-func (a *Analyzer) compile() error {
+func (a *Analyzer) tokenize() error {
 	for _, tokenWriter := range a.tokenWriters {
 		tokenWriter.writer.WriteString("<tokens>")
 		tokenWriter.writer.WriteRune('\n')
@@ -144,6 +172,17 @@ func (a *Analyzer) compile() error {
 
 		tokenWriter.writer.WriteString("</tokens>")
 		tokenWriter.writer.WriteRune('\n')
+	}
+	return nil
+}
+
+func (a *Analyzer) compile() error {
+	for _, tokenWriter := range a.tokenWriters {
+
+		err := tokenWriter.compilationEngine.CompileClass()
+		if err != nil {
+			return err
+		}
 	}
 	return nil
 }

@@ -89,7 +89,7 @@ var keywords = map[string]int{
 	"return":      RETURN,
 }
 
-var xmlTag = map[int]string{
+var XMLTags = map[int]string{
 	KEYWORD:      "keyword",
 	SYMBOL:       "symbol",
 	IDENTIFIER:   "identifier",
@@ -122,7 +122,7 @@ func NewTokenizer(jackFile string) (*Tokenizer, error) {
 		lenData: len(data),
 	}
 
-	t.Advance()
+	t.Advance() // init and setup nextToken
 
 	return t, nil
 }
@@ -140,7 +140,7 @@ func (t *Tokenizer) Token() string {
 }
 
 func (t *Tokenizer) TokenTypeString() string {
-	return xmlTag[t.currentTokenType]
+	return XMLTags[t.currentTokenType]
 }
 
 func (t *Tokenizer) HasMoreTokens() bool {
@@ -237,7 +237,7 @@ func (t *Tokenizer) TokenType() int {
 
 func (t *Tokenizer) KeyWord() (int, error) {
 	if t.currentTokenType != KEYWORD {
-		return -1, fmt.Errorf("only call KeyWord when tokenType is %s; current tokenType is: %s", xmlTag[INT_CONST], xmlTag[t.currentTokenType])
+		return -1, fmt.Errorf("only call KeyWord when tokenType is %s; current tokenType is: %s", XMLTags[INT_CONST], XMLTags[t.currentTokenType])
 	}
 
 	if kw, ok := keywords[t.currentToken]; ok {
@@ -249,7 +249,7 @@ func (t *Tokenizer) KeyWord() (int, error) {
 
 func (t *Tokenizer) Symbol() (rune, error) {
 	if t.currentTokenType != SYMBOL {
-		return 0, fmt.Errorf("only call Symbol when tokenType is %s; current tokenType is: %s", xmlTag[SYMBOL], xmlTag[t.currentTokenType])
+		return 0, fmt.Errorf("only call Symbol when tokenType is %s; current tokenType is: %s", XMLTags[SYMBOL], XMLTags[t.currentTokenType])
 	}
 
 	return rune(t.currentToken[0]), nil
@@ -257,7 +257,7 @@ func (t *Tokenizer) Symbol() (rune, error) {
 
 func (t *Tokenizer) Identifier() (string, error) {
 	if t.currentTokenType != IDENTIFIER {
-		return "", fmt.Errorf("only call Identifier when tokenType is %s; current tokenType is: %s", xmlTag[IDENTIFIER], xmlTag[t.currentTokenType])
+		return "", fmt.Errorf("only call Identifier when tokenType is %s; current tokenType is: %s", XMLTags[IDENTIFIER], XMLTags[t.currentTokenType])
 	}
 
 	return t.currentToken, nil
@@ -265,7 +265,7 @@ func (t *Tokenizer) Identifier() (string, error) {
 
 func (t *Tokenizer) IntVal() (int, error) {
 	if t.currentTokenType != INT_CONST {
-		return -1, fmt.Errorf("only call IntVal when tokenType is %s; current tokenType is: %s", xmlTag[INT_CONST], xmlTag[t.currentTokenType])
+		return -1, fmt.Errorf("only call IntVal when tokenType is %s; current tokenType is: %s", XMLTags[INT_CONST], XMLTags[t.currentTokenType])
 	}
 
 	cTokenInt, err := strconv.Atoi(t.currentToken)
@@ -277,7 +277,7 @@ func (t *Tokenizer) IntVal() (int, error) {
 
 func (t *Tokenizer) StringVal() (string, error) {
 	if t.currentTokenType != STRING_CONST {
-		return "", fmt.Errorf("only call StringVal when tokenType is %s; current tokenType is: %s", xmlTag[STRING_CONST], xmlTag[t.currentTokenType])
+		return "", fmt.Errorf("only call StringVal when tokenType is %s; current tokenType is: %s", XMLTags[STRING_CONST], XMLTags[t.currentTokenType])
 	}
 
 	return t.currentToken, nil
