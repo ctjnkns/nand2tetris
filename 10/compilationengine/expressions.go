@@ -13,9 +13,26 @@ func (ce *CompilationEngine) CompileExpression() error {
 		return err
 	}
 
+	for isOp(ce.tokenizer.Token()) {
+		if err := ce.writeSymbol(ce.tokenizer.Token()); err != nil {
+			return err
+		}
+		if err := ce.CompileTerm(); err != nil {
+			return err
+		}
+	}
+
 	ce.indent--
 
 	return ce.writeLine("</expression>")
+}
+
+func isOp(s string) bool {
+	switch s {
+	case "+", "-", "*", "/", "&", "|", "<", ">", "=":
+		return true
+	}
+	return false
 }
 
 func (ce *CompilationEngine) CompileTerm() error {
@@ -25,13 +42,81 @@ func (ce *CompilationEngine) CompileTerm() error {
 
 	ce.indent++
 
-	if ce.tokenizer.TokenType() == tokenizer.KEYWORD {
+	switch ce.tokenizer.TokenType() {
+	case tokenizer.INT_CONST:
+		if err := ce.writeExpectedAndAdvance(tokenizer.INT_CONST, ""); err != nil {
+			return err
+		}
+	case tokenizer.STRING_CONST:
+		if err := ce.writeExpectedAndAdvance(tokenizer.STRING_CONST, ""); err != nil {
+			return err
+		}
+	case tokenizer.KEYWORD:
 		if err := ce.writeKeyword(""); err != nil {
 			return err
 		}
-	} else {
+	case tokenizer.IDENTIFIER:
 		if err := ce.writeIdentifier(); err != nil {
 			return err
+		}
+
+		switch ce.tokenizer.Token() {
+		case "[":
+			if err := ce.writeSymbol("["); err != nil {
+				return err
+			}
+			if err := ce.CompileExpression(); err != nil {
+				return err
+			}
+			if err := ce.writeSymbol("]"); err != nil {
+				return err
+			}
+		case "(":
+			if err := ce.writeSymbol("("); err != nil {
+				return err
+			}
+			if err := ce.CompileExpressionList(); err != nil {
+				return err
+			}
+			if err := ce.writeSymbol(")"); err != nil {
+				return err
+			}
+		case ".":
+			if err := ce.writeSymbol("."); err != nil {
+				return err
+			}
+			if err := ce.writeIdentifier(); err != nil {
+				return err
+			}
+			if err := ce.writeSymbol("("); err != nil {
+				return err
+			}
+			if err := ce.CompileExpressionList(); err != nil {
+				return err
+			}
+			if err := ce.writeSymbol(")"); err != nil {
+				return err
+			}
+		}
+	case tokenizer.SYMBOL:
+		if ce.tokenizer.Token() == "(" {
+			if err := ce.writeSymbol("("); err != nil {
+				return err
+			}
+			if err := ce.CompileExpression(); err != nil {
+				return err
+			}
+			if err := ce.writeSymbol(")"); err != nil {
+				return err
+			}
+		} else {
+			// unaryOp: - or ~
+			if err := ce.writeSymbol(ce.tokenizer.Token()); err != nil {
+				return err
+			}
+			if err := ce.CompileTerm(); err != nil {
+				return err
+			}
 		}
 	}
 

@@ -43,9 +43,7 @@ func (ce *CompilationEngine) CompileClass() error {
 
 	ce.indent--
 
-	ce.writeLine("</class>")
-
-	return nil
+	return ce.writeLine("</class>")
 }
 
 func (ce *CompilationEngine) CompileClassVarDec() error {
@@ -55,7 +53,7 @@ func (ce *CompilationEngine) CompileClassVarDec() error {
 	}
 
 	if kw != tokenizer.FIELD && kw != tokenizer.STATIC {
-		return fmt.Errorf("token should be field or static when calling CompileClassVarDec; received: %s", kw)
+		return fmt.Errorf("token should be field or static when calling CompileClassVarDec; received: %d", kw)
 	}
 
 	if err := ce.writeLine("<classVarDec>"); err != nil {

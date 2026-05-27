@@ -152,7 +152,7 @@ func (ce *CompilationEngine) CompileVarDec() error {
 	}
 
 	if kw != tokenizer.VAR {
-		return fmt.Errorf("token should be var when calling CompileVarDec; received: %s", kw)
+		return fmt.Errorf("token should be var when calling CompileVarDec; received: %d", kw)
 	}
 
 	if err := ce.writeLine("<varDec>"); err != nil {

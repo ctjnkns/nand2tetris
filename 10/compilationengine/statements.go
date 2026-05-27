@@ -62,6 +62,18 @@ func (ce *CompilationEngine) CompileLet() error {
 		return err
 	}
 
+	if ce.tokenizer.Token() == "[" {
+		if err := ce.writeSymbol("["); err != nil {
+			return err
+		}
+		if err := ce.CompileExpression(); err != nil {
+			return err
+		}
+		if err := ce.writeSymbol("]"); err != nil {
+			return err
+		}
+	}
+
 	if err := ce.writeSymbol("="); err != nil {
 		return err
 	}
