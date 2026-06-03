@@ -161,7 +161,12 @@
           <keyword> return </keyword>
           <expression>
             <term>
-              <keyword> this </keyword>
+              <identifier>
+                <name> x </name>
+                <category> field </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -255,7 +260,12 @@
               <expressionList>
                 <expression>
                   <term>
-                    <keyword> true </keyword>
+                    <identifier>
+                      <name> x </name>
+                      <category> field </category>
+                      <index> 0 </index>
+                      <usage> used </usage>
+                    </identifier>
                   </term>
                 </expression>
               </expressionList>
@@ -312,15 +322,6 @@
                       <usage> used </usage>
                     </identifier>
                   </term>
-                  <symbol> + </symbol>
-                  <term>
-                    <identifier>
-                      <name> size </name>
-                      <category> field </category>
-                      <index> 2 </index>
-                      <usage> used </usage>
-                    </identifier>
-                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
@@ -329,15 +330,6 @@
                       <name> y </name>
                       <category> field </category>
                       <index> 1 </index>
-                      <usage> used </usage>
-                    </identifier>
-                  </term>
-                  <symbol> + </symbol>
-                  <term>
-                    <identifier>
-                      <name> size </name>
-                      <category> field </category>
-                      <index> 2 </index>
                       <usage> used </usage>
                     </identifier>
                   </term>
@@ -390,7 +382,12 @@
               <expressionList>
                 <expression>
                   <term>
-                    <keyword> false </keyword>
+                    <identifier>
+                      <name> x </name>
+                      <category> field </category>
+                      <index> 0 </index>
+                      <usage> used </usage>
+                    </identifier>
                   </term>
                 </expression>
               </expressionList>
@@ -447,15 +444,6 @@
                       <usage> used </usage>
                     </identifier>
                   </term>
-                  <symbol> + </symbol>
-                  <term>
-                    <identifier>
-                      <name> size </name>
-                      <category> field </category>
-                      <index> 2 </index>
-                      <usage> used </usage>
-                    </identifier>
-                  </term>
                 </expression>
                 <symbol> , </symbol>
                 <expression>
@@ -464,15 +452,6 @@
                       <name> y </name>
                       <category> field </category>
                       <index> 1 </index>
-                      <usage> used </usage>
-                    </identifier>
-                  </term>
-                  <symbol> + </symbol>
-                  <term>
-                    <identifier>
-                      <name> size </name>
-                      <category> field </category>
-                      <index> 2 </index>
                       <usage> used </usage>
                     </identifier>
                   </term>
@@ -511,71 +490,12 @@
           <symbol> ( </symbol>
           <expression>
             <term>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <symbol> ( </symbol>
-                  <expression>
-                    <term>
-                      <identifier>
-                        <name> y </name>
-                        <category> field </category>
-                        <index> 1 </index>
-                        <usage> used </usage>
-                      </identifier>
-                    </term>
-                    <symbol> + </symbol>
-                    <term>
-                      <identifier>
-                        <name> size </name>
-                        <category> field </category>
-                        <index> 2 </index>
-                        <usage> used </usage>
-                      </identifier>
-                    </term>
-                  </expression>
-                  <symbol> ) </symbol>
-                </term>
-                <symbol> &lt; </symbol>
-                <term>
-                  <integerConstant> 254 </integerConstant>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-            </term>
-            <symbol> &amp; </symbol>
-            <term>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <symbol> ( </symbol>
-                  <expression>
-                    <term>
-                      <identifier>
-                        <name> x </name>
-                        <category> field </category>
-                        <index> 0 </index>
-                        <usage> used </usage>
-                      </identifier>
-                    </term>
-                    <symbol> + </symbol>
-                    <term>
-                      <identifier>
-                        <name> size </name>
-                        <category> field </category>
-                        <index> 2 </index>
-                        <usage> used </usage>
-                      </identifier>
-                    </term>
-                  </expression>
-                  <symbol> ) </symbol>
-                </term>
-                <symbol> &lt; </symbol>
-                <term>
-                  <integerConstant> 510 </integerConstant>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
+              <identifier>
+                <name> x </name>
+                <category> field </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -615,10 +535,6 @@
                     <index> 2 </index>
                     <usage> used </usage>
                   </identifier>
-                </term>
-                <symbol> + </symbol>
-                <term>
-                  <integerConstant> 2 </integerConstant>
                 </term>
               </expression>
               <symbol> ; </symbol>
@@ -678,10 +594,6 @@
                 <usage> used </usage>
               </identifier>
             </term>
-            <symbol> &gt; </symbol>
-            <term>
-              <integerConstant> 2 </integerConstant>
-            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -720,10 +632,6 @@
                     <index> 2 </index>
                     <usage> used </usage>
                   </identifier>
-                </term>
-                <symbol> - </symbol>
-                <term>
-                  <integerConstant> 2 </integerConstant>
                 </term>
               </expression>
               <symbol> ; </symbol>
@@ -783,10 +691,6 @@
                 <usage> used </usage>
               </identifier>
             </term>
-            <symbol> &gt; </symbol>
-            <term>
-              <integerConstant> 1 </integerConstant>
-            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -810,7 +714,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <keyword> false </keyword>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                   </expressionList>
@@ -849,31 +758,12 @@
                     <symbol> , </symbol>
                     <expression>
                       <term>
-                        <symbol> ( </symbol>
-                        <expression>
-                          <term>
-                            <identifier>
-                              <name> y </name>
-                              <category> field </category>
-                              <index> 1 </index>
-                              <usage> used </usage>
-                            </identifier>
-                          </term>
-                          <symbol> + </symbol>
-                          <term>
-                            <identifier>
-                              <name> size </name>
-                              <category> field </category>
-                              <index> 2 </index>
-                              <usage> used </usage>
-                            </identifier>
-                          </term>
-                        </expression>
-                        <symbol> ) </symbol>
-                      </term>
-                      <symbol> - </symbol>
-                      <term>
-                        <integerConstant> 1 </integerConstant>
+                        <identifier>
+                          <name> y </name>
+                          <category> field </category>
+                          <index> 1 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                     <symbol> , </symbol>
@@ -886,15 +776,6 @@
                           <usage> used </usage>
                         </identifier>
                       </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
                     </expression>
                     <symbol> , </symbol>
                     <expression>
@@ -903,15 +784,6 @@
                           <name> y </name>
                           <category> field </category>
                           <index> 1 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
                           <usage> used </usage>
                         </identifier>
                       </term>
@@ -940,10 +812,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> - </symbol>
-                <term>
-                  <integerConstant> 2 </integerConstant>
-                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -966,7 +834,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <keyword> true </keyword>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                   </expressionList>
@@ -1023,15 +896,6 @@
                           <usage> used </usage>
                         </identifier>
                       </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
                     </expression>
                     <symbol> , </symbol>
                     <expression>
@@ -1042,10 +906,6 @@
                           <index> 1 </index>
                           <usage> used </usage>
                         </identifier>
-                      </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <integerConstant> 1 </integerConstant>
                       </term>
                     </expression>
                   </expressionList>
@@ -1085,31 +945,12 @@
           <symbol> ( </symbol>
           <expression>
             <term>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <identifier>
-                    <name> y </name>
-                    <category> field </category>
-                    <index> 1 </index>
-                    <usage> used </usage>
-                  </identifier>
-                </term>
-                <symbol> + </symbol>
-                <term>
-                  <identifier>
-                    <name> size </name>
-                    <category> field </category>
-                    <index> 2 </index>
-                    <usage> used </usage>
-                  </identifier>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-            </term>
-            <symbol> &lt; </symbol>
-            <term>
-              <integerConstant> 254 </integerConstant>
+              <identifier>
+                <name> y </name>
+                <category> field </category>
+                <index> 1 </index>
+                <usage> used </usage>
+              </identifier>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -1134,7 +975,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <keyword> false </keyword>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                   </expressionList>
@@ -1191,15 +1037,6 @@
                           <usage> used </usage>
                         </identifier>
                       </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
                     </expression>
                     <symbol> , </symbol>
                     <expression>
@@ -1210,10 +1047,6 @@
                           <index> 1 </index>
                           <usage> used </usage>
                         </identifier>
-                      </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <integerConstant> 1 </integerConstant>
                       </term>
                     </expression>
                   </expressionList>
@@ -1240,10 +1073,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> + </symbol>
-                <term>
-                  <integerConstant> 2 </integerConstant>
-                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -1266,7 +1095,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <keyword> true </keyword>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                   </expressionList>
@@ -1305,31 +1139,12 @@
                     <symbol> , </symbol>
                     <expression>
                       <term>
-                        <symbol> ( </symbol>
-                        <expression>
-                          <term>
-                            <identifier>
-                              <name> y </name>
-                              <category> field </category>
-                              <index> 1 </index>
-                              <usage> used </usage>
-                            </identifier>
-                          </term>
-                          <symbol> + </symbol>
-                          <term>
-                            <identifier>
-                              <name> size </name>
-                              <category> field </category>
-                              <index> 2 </index>
-                              <usage> used </usage>
-                            </identifier>
-                          </term>
-                        </expression>
-                        <symbol> ) </symbol>
-                      </term>
-                      <symbol> - </symbol>
-                      <term>
-                        <integerConstant> 1 </integerConstant>
+                        <identifier>
+                          <name> y </name>
+                          <category> field </category>
+                          <index> 1 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                     <symbol> , </symbol>
@@ -1342,15 +1157,6 @@
                           <usage> used </usage>
                         </identifier>
                       </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
                     </expression>
                     <symbol> , </symbol>
                     <expression>
@@ -1359,15 +1165,6 @@
                           <name> y </name>
                           <category> field </category>
                           <index> 1 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
                           <usage> used </usage>
                         </identifier>
                       </term>
@@ -1416,10 +1213,6 @@
                 <usage> used </usage>
               </identifier>
             </term>
-            <symbol> &gt; </symbol>
-            <term>
-              <integerConstant> 1 </integerConstant>
-            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -1443,7 +1236,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <keyword> false </keyword>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                   </expressionList>
@@ -1471,31 +1269,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <symbol> ( </symbol>
-                        <expression>
-                          <term>
-                            <identifier>
-                              <name> x </name>
-                              <category> field </category>
-                              <index> 0 </index>
-                              <usage> used </usage>
-                            </identifier>
-                          </term>
-                          <symbol> + </symbol>
-                          <term>
-                            <identifier>
-                              <name> size </name>
-                              <category> field </category>
-                              <index> 2 </index>
-                              <usage> used </usage>
-                            </identifier>
-                          </term>
-                        </expression>
-                        <symbol> ) </symbol>
-                      </term>
-                      <symbol> - </symbol>
-                      <term>
-                        <integerConstant> 1 </integerConstant>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                     <symbol> , </symbol>
@@ -1519,15 +1298,6 @@
                           <usage> used </usage>
                         </identifier>
                       </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
                     </expression>
                     <symbol> , </symbol>
                     <expression>
@@ -1536,15 +1306,6 @@
                           <name> y </name>
                           <category> field </category>
                           <index> 1 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
                           <usage> used </usage>
                         </identifier>
                       </term>
@@ -1573,10 +1334,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> - </symbol>
-                <term>
-                  <integerConstant> 2 </integerConstant>
-                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -1599,7 +1356,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <keyword> true </keyword>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                   </expressionList>
@@ -1656,10 +1418,6 @@
                           <usage> used </usage>
                         </identifier>
                       </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <integerConstant> 1 </integerConstant>
-                      </term>
                     </expression>
                     <symbol> , </symbol>
                     <expression>
@@ -1668,15 +1426,6 @@
                           <name> y </name>
                           <category> field </category>
                           <index> 1 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
                           <usage> used </usage>
                         </identifier>
                       </term>
@@ -1718,31 +1467,12 @@
           <symbol> ( </symbol>
           <expression>
             <term>
-              <symbol> ( </symbol>
-              <expression>
-                <term>
-                  <identifier>
-                    <name> x </name>
-                    <category> field </category>
-                    <index> 0 </index>
-                    <usage> used </usage>
-                  </identifier>
-                </term>
-                <symbol> + </symbol>
-                <term>
-                  <identifier>
-                    <name> size </name>
-                    <category> field </category>
-                    <index> 2 </index>
-                    <usage> used </usage>
-                  </identifier>
-                </term>
-              </expression>
-              <symbol> ) </symbol>
-            </term>
-            <symbol> &lt; </symbol>
-            <term>
-              <integerConstant> 510 </integerConstant>
+              <identifier>
+                <name> x </name>
+                <category> field </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -1767,7 +1497,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <keyword> false </keyword>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                   </expressionList>
@@ -1824,10 +1559,6 @@
                           <usage> used </usage>
                         </identifier>
                       </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <integerConstant> 1 </integerConstant>
-                      </term>
                     </expression>
                     <symbol> , </symbol>
                     <expression>
@@ -1836,15 +1567,6 @@
                           <name> y </name>
                           <category> field </category>
                           <index> 1 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
                           <usage> used </usage>
                         </identifier>
                       </term>
@@ -1873,10 +1595,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> + </symbol>
-                <term>
-                  <integerConstant> 2 </integerConstant>
-                </term>
               </expression>
               <symbol> ; </symbol>
             </letStatement>
@@ -1899,7 +1617,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <keyword> true </keyword>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                   </expressionList>
@@ -1927,31 +1650,12 @@
                   <expressionList>
                     <expression>
                       <term>
-                        <symbol> ( </symbol>
-                        <expression>
-                          <term>
-                            <identifier>
-                              <name> x </name>
-                              <category> field </category>
-                              <index> 0 </index>
-                              <usage> used </usage>
-                            </identifier>
-                          </term>
-                          <symbol> + </symbol>
-                          <term>
-                            <identifier>
-                              <name> size </name>
-                              <category> field </category>
-                              <index> 2 </index>
-                              <usage> used </usage>
-                            </identifier>
-                          </term>
-                        </expression>
-                        <symbol> ) </symbol>
-                      </term>
-                      <symbol> - </symbol>
-                      <term>
-                        <integerConstant> 1 </integerConstant>
+                        <identifier>
+                          <name> x </name>
+                          <category> field </category>
+                          <index> 0 </index>
+                          <usage> used </usage>
+                        </identifier>
                       </term>
                     </expression>
                     <symbol> , </symbol>
@@ -1975,15 +1679,6 @@
                           <usage> used </usage>
                         </identifier>
                       </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
                     </expression>
                     <symbol> , </symbol>
                     <expression>
@@ -1992,15 +1687,6 @@
                           <name> y </name>
                           <category> field </category>
                           <index> 1 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
-                      <symbol> + </symbol>
-                      <term>
-                        <identifier>
-                          <name> size </name>
-                          <category> field </category>
-                          <index> 2 </index>
                           <usage> used </usage>
                         </identifier>
                       </term>

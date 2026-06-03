@@ -58,7 +58,8 @@ func (ce *CompilationEngine) CompileLet() error {
 	}
 
 	// varName
-	if err := ce.writeIdentifier(); err != nil {
+	name := ce.tokenizer.Token()
+	if err := ce.writeVariableUse(name); err != nil {
 		return err
 	}
 
@@ -211,7 +212,7 @@ func (ce *CompilationEngine) CompileDo() error {
 		return err
 	}
 
-	if err := ce.compileSubroutineCall(); err != nil {
+	if err := ce.CompileExpression(); err != nil {
 		return err
 	}
 

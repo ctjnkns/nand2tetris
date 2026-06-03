@@ -56,12 +56,13 @@ func (ce *CompilationEngine) CompileTerm() error {
 			return err
 		}
 	case tokenizer.IDENTIFIER:
-		if err := ce.writeIdentifier(); err != nil {
-			return err
-		}
+		name := ce.tokenizer.Token()
 
-		switch ce.tokenizer.Token() {
+		switch ce.tokenizer.Peek() {
 		case "[":
+			if err := ce.writeVariableUse(name); err != nil {
+				return err
+			}
 			if err := ce.writeSymbol("["); err != nil {
 				return err
 			}
@@ -71,7 +72,11 @@ func (ce *CompilationEngine) CompileTerm() error {
 			if err := ce.writeSymbol("]"); err != nil {
 				return err
 			}
+
 		case "(":
+			if err := ce.writeIdentifierInfo(name, "subroutine", "used", nil); err != nil {
+				return err
+			}
 			if err := ce.writeSymbol("("); err != nil {
 				return err
 			}
@@ -81,13 +86,27 @@ func (ce *CompilationEngine) CompileTerm() error {
 			if err := ce.writeSymbol(")"); err != nil {
 				return err
 			}
+
 		case ".":
+			if _, ok := ce.lookup(name); ok {
+				if err := ce.writeVariableUse(name); err != nil {
+					return err
+				}
+			} else {
+				if err := ce.writeIdentifierInfo(name, "class", "used", nil); err != nil {
+					return err
+				}
+			}
+
 			if err := ce.writeSymbol("."); err != nil {
 				return err
 			}
-			if err := ce.writeIdentifier(); err != nil {
+
+			subroutineName := ce.tokenizer.Token()
+			if err := ce.writeIdentifierInfo(subroutineName, "subroutine", "used", nil); err != nil {
 				return err
 			}
+
 			if err := ce.writeSymbol("("); err != nil {
 				return err
 			}
@@ -95,6 +114,11 @@ func (ce *CompilationEngine) CompileTerm() error {
 				return err
 			}
 			if err := ce.writeSymbol(")"); err != nil {
+				return err
+			}
+
+		default:
+			if err := ce.writeVariableUse(name); err != nil {
 				return err
 			}
 		}
@@ -123,36 +147,6 @@ func (ce *CompilationEngine) CompileTerm() error {
 	ce.indent--
 
 	return ce.writeLine("</term>")
-}
-
-func (ce *CompilationEngine) compileSubroutineCall() error {
-	if err := ce.writeIdentifier(); err != nil {
-		return err
-	}
-
-	// handle . in subroutine call
-	if ce.tokenizer.Token() == "." {
-		if err := ce.writeSymbol("."); err != nil {
-			return err
-		}
-		if err := ce.writeIdentifier(); err != nil {
-			return err
-		}
-	}
-
-	if err := ce.writeSymbol("("); err != nil {
-		return err
-	}
-
-	if err := ce.CompileExpressionList(); err != nil {
-		return err
-	}
-
-	if err := ce.writeSymbol(")"); err != nil {
-		return err
-	}
-
-	return nil
 }
 
 func (ce *CompilationEngine) CompileExpressionList() error {

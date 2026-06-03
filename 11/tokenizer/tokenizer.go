@@ -282,3 +282,7 @@ func (t *Tokenizer) StringVal() (string, error) {
 
 	return t.currentToken, nil
 }
+
+func (t *Tokenizer) Peek() string {
+	return t.nextToken
+}

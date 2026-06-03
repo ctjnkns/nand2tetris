@@ -1,0 +1,488 @@
+<class>
+  <keyword> class </keyword>
+  <identifier>
+    <name> Main </name>
+    <category> class </category>
+    <usage> declared </usage>
+  </identifier>
+  <symbol> { </symbol>
+  <subroutineDec>
+    <keyword> function </keyword>
+    <keyword> void </keyword>
+    <identifier>
+      <name> main </name>
+      <category> subroutine </category>
+      <usage> declared </usage>
+    </identifier>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <varDec>
+        <keyword> var </keyword>
+        <identifier>
+          <name> Array </name>
+          <category> class </category>
+          <usage> used </usage>
+        </identifier>
+        <identifier>
+          <name> a </name>
+          <category> var </category>
+          <index> 0 </index>
+          <usage> declared </usage>
+        </identifier>
+        <symbol> ; </symbol>
+      </varDec>
+      <varDec>
+        <keyword> var </keyword>
+        <keyword> int </keyword>
+        <identifier>
+          <name> length </name>
+          <category> var </category>
+          <index> 1 </index>
+          <usage> declared </usage>
+        </identifier>
+        <symbol> ; </symbol>
+      </varDec>
+      <varDec>
+        <keyword> var </keyword>
+        <keyword> int </keyword>
+        <identifier>
+          <name> i </name>
+          <category> var </category>
+          <index> 2 </index>
+          <usage> declared </usage>
+        </identifier>
+        <symbol> , </symbol>
+        <identifier>
+          <name> sum </name>
+          <category> var </category>
+          <index> 3 </index>
+          <usage> declared </usage>
+        </identifier>
+        <symbol> ; </symbol>
+      </varDec>
+      <statements>
+        <letStatement>
+          <keyword> let </keyword>
+          <identifier>
+            <name> length </name>
+            <category> var </category>
+            <index> 1 </index>
+            <usage> used </usage>
+          </identifier>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <identifier>
+                <name> Keyboard </name>
+                <category> class </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> . </symbol>
+              <identifier>
+                <name> readInt </name>
+                <category> subroutine </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <stringConstant> HOW MANY NUMBERS?  </stringConstant>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <identifier>
+            <name> a </name>
+            <category> var </category>
+            <index> 0 </index>
+            <usage> used </usage>
+          </identifier>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <identifier>
+                <name> Array </name>
+                <category> class </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> . </symbol>
+              <identifier>
+                <name> new </name>
+                <category> subroutine </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <identifier>
+                      <name> length </name>
+                      <category> var </category>
+                      <index> 1 </index>
+                      <usage> used </usage>
+                    </identifier>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <identifier>
+            <name> i </name>
+            <category> var </category>
+            <index> 2 </index>
+            <usage> used </usage>
+          </identifier>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <whileStatement>
+          <keyword> while </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <identifier>
+                <name> i </name>
+                <category> var </category>
+                <index> 2 </index>
+                <usage> used </usage>
+              </identifier>
+            </term>
+            <symbol> &lt; </symbol>
+            <term>
+              <identifier>
+                <name> length </name>
+                <category> var </category>
+                <index> 1 </index>
+                <usage> used </usage>
+              </identifier>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <identifier>
+                <name> a </name>
+                <category> var </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
+              <symbol> [ </symbol>
+              <expression>
+                <term>
+                  <identifier>
+                    <name> i </name>
+                    <category> var </category>
+                    <index> 2 </index>
+                    <usage> used </usage>
+                  </identifier>
+                </term>
+              </expression>
+              <symbol> ] </symbol>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <identifier>
+                    <name> Keyboard </name>
+                    <category> class </category>
+                    <usage> used </usage>
+                  </identifier>
+                  <symbol> . </symbol>
+                  <identifier>
+                    <name> readInt </name>
+                    <category> subroutine </category>
+                    <usage> used </usage>
+                  </identifier>
+                  <symbol> ( </symbol>
+                  <expressionList>
+                    <expression>
+                      <term>
+                        <stringConstant> ENTER THE NEXT NUMBER:  </stringConstant>
+                      </term>
+                    </expression>
+                  </expressionList>
+                  <symbol> ) </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <identifier>
+                <name> i </name>
+                <category> var </category>
+                <index> 2 </index>
+                <usage> used </usage>
+              </identifier>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <identifier>
+                    <name> i </name>
+                    <category> var </category>
+                    <index> 2 </index>
+                    <usage> used </usage>
+                  </identifier>
+                </term>
+                <symbol> + </symbol>
+                <term>
+                  <integerConstant> 1 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+        </whileStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <identifier>
+            <name> i </name>
+            <category> var </category>
+            <index> 2 </index>
+            <usage> used </usage>
+          </identifier>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <letStatement>
+          <keyword> let </keyword>
+          <identifier>
+            <name> sum </name>
+            <category> var </category>
+            <index> 3 </index>
+            <usage> used </usage>
+          </identifier>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <integerConstant> 0 </integerConstant>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <whileStatement>
+          <keyword> while </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <identifier>
+                <name> i </name>
+                <category> var </category>
+                <index> 2 </index>
+                <usage> used </usage>
+              </identifier>
+            </term>
+            <symbol> &lt; </symbol>
+            <term>
+              <identifier>
+                <name> length </name>
+                <category> var </category>
+                <index> 1 </index>
+                <usage> used </usage>
+              </identifier>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+            <letStatement>
+              <keyword> let </keyword>
+              <identifier>
+                <name> sum </name>
+                <category> var </category>
+                <index> 3 </index>
+                <usage> used </usage>
+              </identifier>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <identifier>
+                    <name> sum </name>
+                    <category> var </category>
+                    <index> 3 </index>
+                    <usage> used </usage>
+                  </identifier>
+                </term>
+                <symbol> + </symbol>
+                <term>
+                  <identifier>
+                    <name> a </name>
+                    <category> var </category>
+                    <index> 0 </index>
+                    <usage> used </usage>
+                  </identifier>
+                  <symbol> [ </symbol>
+                  <expression>
+                    <term>
+                      <identifier>
+                        <name> i </name>
+                        <category> var </category>
+                        <index> 2 </index>
+                        <usage> used </usage>
+                      </identifier>
+                    </term>
+                  </expression>
+                  <symbol> ] </symbol>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+            <letStatement>
+              <keyword> let </keyword>
+              <identifier>
+                <name> i </name>
+                <category> var </category>
+                <index> 2 </index>
+                <usage> used </usage>
+              </identifier>
+              <symbol> = </symbol>
+              <expression>
+                <term>
+                  <identifier>
+                    <name> i </name>
+                    <category> var </category>
+                    <index> 2 </index>
+                    <usage> used </usage>
+                  </identifier>
+                </term>
+                <symbol> + </symbol>
+                <term>
+                  <integerConstant> 1 </integerConstant>
+                </term>
+              </expression>
+              <symbol> ; </symbol>
+            </letStatement>
+          </statements>
+          <symbol> } </symbol>
+        </whileStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <expression>
+            <term>
+              <identifier>
+                <name> Output </name>
+                <category> class </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> . </symbol>
+              <identifier>
+                <name> printString </name>
+                <category> subroutine </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <stringConstant> THE AVERAGE IS:  </stringConstant>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <expression>
+            <term>
+              <identifier>
+                <name> Output </name>
+                <category> class </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> . </symbol>
+              <identifier>
+                <name> printInt </name>
+                <category> subroutine </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> ( </symbol>
+              <expressionList>
+                <expression>
+                  <term>
+                    <identifier>
+                      <name> sum </name>
+                      <category> var </category>
+                      <index> 3 </index>
+                      <usage> used </usage>
+                    </identifier>
+                  </term>
+                  <symbol> / </symbol>
+                  <term>
+                    <identifier>
+                      <name> length </name>
+                      <category> var </category>
+                      <index> 1 </index>
+                      <usage> used </usage>
+                    </identifier>
+                  </term>
+                </expression>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <expression>
+            <term>
+              <identifier>
+                <name> Output </name>
+                <category> class </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> . </symbol>
+              <identifier>
+                <name> println </name>
+                <category> subroutine </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> ( </symbol>
+              <expressionList>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <symbol> } </symbol>
+</class>

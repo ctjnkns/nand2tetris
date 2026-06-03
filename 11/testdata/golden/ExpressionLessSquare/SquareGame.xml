@@ -63,37 +63,11 @@
           <expression>
             <term>
               <identifier>
-                <name> Square </name>
-                <category> class </category>
+                <name> square </name>
+                <category> field </category>
+                <index> 0 </index>
                 <usage> used </usage>
               </identifier>
-              <symbol> . </symbol>
-              <identifier>
-                <name> new </name>
-                <category> subroutine </category>
-                <usage> used </usage>
-              </identifier>
-              <symbol> ( </symbol>
-              <expressionList>
-                <expression>
-                  <term>
-                    <integerConstant> 0 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 0 </integerConstant>
-                  </term>
-                </expression>
-                <symbol> , </symbol>
-                <expression>
-                  <term>
-                    <integerConstant> 30 </integerConstant>
-                  </term>
-                </expression>
-              </expressionList>
-              <symbol> ) </symbol>
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -109,7 +83,12 @@
           <symbol> = </symbol>
           <expression>
             <term>
-              <integerConstant> 0 </integerConstant>
+              <identifier>
+                <name> direction </name>
+                <category> field </category>
+                <index> 1 </index>
+                <usage> used </usage>
+              </identifier>
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -118,7 +97,12 @@
           <keyword> return </keyword>
           <expression>
             <term>
-              <keyword> this </keyword>
+              <identifier>
+                <name> square </name>
+                <category> field </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -185,7 +169,12 @@
               <expressionList>
                 <expression>
                   <term>
-                    <keyword> this </keyword>
+                    <identifier>
+                      <name> square </name>
+                      <category> field </category>
+                      <index> 0 </index>
+                      <usage> used </usage>
+                    </identifier>
                   </term>
                 </expression>
               </expressionList>
@@ -228,10 +217,6 @@
                 <index> 1 </index>
                 <usage> used </usage>
               </identifier>
-            </term>
-            <symbol> = </symbol>
-            <term>
-              <integerConstant> 1 </integerConstant>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -276,10 +261,6 @@
                 <usage> used </usage>
               </identifier>
             </term>
-            <symbol> = </symbol>
-            <term>
-              <integerConstant> 2 </integerConstant>
-            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -323,10 +304,6 @@
                 <usage> used </usage>
               </identifier>
             </term>
-            <symbol> = </symbol>
-            <term>
-              <integerConstant> 3 </integerConstant>
-            </term>
           </expression>
           <symbol> ) </symbol>
           <symbol> { </symbol>
@@ -369,10 +346,6 @@
                 <index> 1 </index>
                 <usage> used </usage>
               </identifier>
-            </term>
-            <symbol> = </symbol>
-            <term>
-              <integerConstant> 4 </integerConstant>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -424,7 +397,12 @@
               <expressionList>
                 <expression>
                   <term>
-                    <integerConstant> 5 </integerConstant>
+                    <identifier>
+                      <name> direction </name>
+                      <category> field </category>
+                      <index> 1 </index>
+                      <usage> used </usage>
+                    </identifier>
                   </term>
                 </expression>
               </expressionList>
@@ -489,7 +467,12 @@
           <symbol> = </symbol>
           <expression>
             <term>
-              <keyword> false </keyword>
+              <identifier>
+                <name> key </name>
+                <category> var </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
             </term>
           </expression>
           <symbol> ; </symbol>
@@ -499,15 +482,12 @@
           <symbol> ( </symbol>
           <expression>
             <term>
-              <symbol> ~ </symbol>
-              <term>
-                <identifier>
-                  <name> exit </name>
-                  <category> var </category>
-                  <index> 1 </index>
-                  <usage> used </usage>
-                </identifier>
-              </term>
+              <identifier>
+                <name> exit </name>
+                <category> var </category>
+                <index> 1 </index>
+                <usage> used </usage>
+              </identifier>
             </term>
           </expression>
           <symbol> ) </symbol>
@@ -525,10 +505,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 0 </integerConstant>
-                </term>
               </expression>
               <symbol> ) </symbol>
               <symbol> { </symbol>
@@ -545,20 +521,11 @@
                   <expression>
                     <term>
                       <identifier>
-                        <name> Keyboard </name>
-                        <category> class </category>
+                        <name> key </name>
+                        <category> var </category>
+                        <index> 0 </index>
                         <usage> used </usage>
                       </identifier>
-                      <symbol> . </symbol>
-                      <identifier>
-                        <name> keyPressed </name>
-                        <category> subroutine </category>
-                        <usage> used </usage>
-                      </identifier>
-                      <symbol> ( </symbol>
-                      <expressionList>
-                      </expressionList>
-                      <symbol> ) </symbol>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -595,10 +562,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 81 </integerConstant>
-                </term>
               </expression>
               <symbol> ) </symbol>
               <symbol> { </symbol>
@@ -614,7 +577,12 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
-                      <keyword> true </keyword>
+                      <identifier>
+                        <name> exit </name>
+                        <category> var </category>
+                        <index> 1 </index>
+                        <usage> used </usage>
+                      </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -633,10 +601,6 @@
                     <index> 0 </index>
                     <usage> used </usage>
                   </identifier>
-                </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 90 </integerConstant>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -681,10 +645,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 88 </integerConstant>
-                </term>
               </expression>
               <symbol> ) </symbol>
               <symbol> { </symbol>
@@ -728,10 +688,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 131 </integerConstant>
-                </term>
               </expression>
               <symbol> ) </symbol>
               <symbol> { </symbol>
@@ -747,7 +703,12 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
-                      <integerConstant> 1 </integerConstant>
+                      <identifier>
+                        <name> exit </name>
+                        <category> var </category>
+                        <index> 1 </index>
+                        <usage> used </usage>
+                      </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -767,10 +728,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 133 </integerConstant>
-                </term>
               </expression>
               <symbol> ) </symbol>
               <symbol> { </symbol>
@@ -786,7 +743,12 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
-                      <integerConstant> 2 </integerConstant>
+                      <identifier>
+                        <name> key </name>
+                        <category> var </category>
+                        <index> 0 </index>
+                        <usage> used </usage>
+                      </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -806,10 +768,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 130 </integerConstant>
-                </term>
               </expression>
               <symbol> ) </symbol>
               <symbol> { </symbol>
@@ -825,7 +783,12 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
-                      <integerConstant> 3 </integerConstant>
+                      <identifier>
+                        <name> square </name>
+                        <category> field </category>
+                        <index> 0 </index>
+                        <usage> used </usage>
+                      </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -845,10 +808,6 @@
                     <usage> used </usage>
                   </identifier>
                 </term>
-                <symbol> = </symbol>
-                <term>
-                  <integerConstant> 132 </integerConstant>
-                </term>
               </expression>
               <symbol> ) </symbol>
               <symbol> { </symbol>
@@ -864,7 +823,12 @@
                   <symbol> = </symbol>
                   <expression>
                     <term>
-                      <integerConstant> 4 </integerConstant>
+                      <identifier>
+                        <name> direction </name>
+                        <category> field </category>
+                        <index> 1 </index>
+                        <usage> used </usage>
+                      </identifier>
                     </term>
                   </expression>
                   <symbol> ; </symbol>
@@ -877,25 +841,12 @@
               <symbol> ( </symbol>
               <expression>
                 <term>
-                  <symbol> ~ </symbol>
-                  <term>
-                    <symbol> ( </symbol>
-                    <expression>
-                      <term>
-                        <identifier>
-                          <name> key </name>
-                          <category> var </category>
-                          <index> 0 </index>
-                          <usage> used </usage>
-                        </identifier>
-                      </term>
-                      <symbol> = </symbol>
-                      <term>
-                        <integerConstant> 0 </integerConstant>
-                      </term>
-                    </expression>
-                    <symbol> ) </symbol>
-                  </term>
+                  <identifier>
+                    <name> key </name>
+                    <category> var </category>
+                    <index> 0 </index>
+                    <usage> used </usage>
+                  </identifier>
                 </term>
               </expression>
               <symbol> ) </symbol>
@@ -913,20 +864,11 @@
                   <expression>
                     <term>
                       <identifier>
-                        <name> Keyboard </name>
-                        <category> class </category>
+                        <name> key </name>
+                        <category> var </category>
+                        <index> 0 </index>
                         <usage> used </usage>
                       </identifier>
-                      <symbol> . </symbol>
-                      <identifier>
-                        <name> keyPressed </name>
-                        <category> subroutine </category>
-                        <usage> used </usage>
-                      </identifier>
-                      <symbol> ( </symbol>
-                      <expressionList>
-                      </expressionList>
-                      <symbol> ) </symbol>
                     </term>
                   </expression>
                   <symbol> ; </symbol>

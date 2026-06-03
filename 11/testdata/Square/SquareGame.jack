@@ -1,7 +1,9 @@
 // This file is part of www.nand2tetris.org
 // and the book "The Elements of Computing Systems"
 // by Nisan and Schocken, MIT Press.
-// File name: projects/11/Square/SquareGame.jack
+// File name: projects/10/Square/SquareGame.jack
+
+// (same as projects/9/Square/SquareGame.jack)
 /**
  * Implements the Square game.
  * This simple game allows the user to move a black square around
@@ -17,11 +19,12 @@ class SquareGame {
    field int direction; // the square's current direction: 
                         // 0=none, 1=up, 2=down, 3=left, 4=right
 
-   /** Constructs a new square game. */
+   /** Constructs a new Square Game. */
    constructor SquareGame new() {
-      // The initial square is located in (0,0), has size 30, and is not moving.
+      // Creates a 30 by 30 pixels square and positions it at the top-left
+      // of the screen.
       let square = Square.new(0, 0, 30);
-      let direction = 0;
+      let direction = 0;  // initial state is no movement
       return this;
    }
 

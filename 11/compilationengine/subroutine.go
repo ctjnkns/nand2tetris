@@ -3,6 +3,7 @@ package compilationengine
 import (
 	"fmt"
 
+	"github.com/ctjnkns/nand2tetris/11/jackanalyzer/symboltable"
 	"github.com/ctjnkns/nand2tetris/11/jackanalyzer/tokenizer"
 )
 
@@ -18,6 +19,14 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 
 	if kw != tokenizer.CONSTRUCTOR && kw != tokenizer.FUNCTION && kw != tokenizer.METHOD {
 		return fmt.Errorf("token should be constructor, function, or method when calling ComipleSubroutine; got: %s", ce.tokenizer.Token())
+	}
+
+	ce.subroutineTable.Reset()
+
+	if kw == tokenizer.METHOD {
+		if err := ce.subroutineTable.Define("this", ce.className, symboltable.ARG); err != nil {
+			return err
+		}
 	}
 
 	if err := ce.writeLine("<subroutineDec>"); err != nil {
@@ -37,7 +46,8 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 	}
 
 	// subroutineName
-	if err := ce.writeIdentifier(); err != nil {
+	name := ce.tokenizer.Token()
+	if err := ce.writeIdentifierInfo(name, "subroutine", "declared", nil); err != nil {
 		return err
 	}
 
@@ -98,11 +108,19 @@ func (ce *CompilationEngine) CompileParameterList() error {
 	ce.indent++
 
 	if ce.tokenizer.Token() != ")" {
+		typeName := ce.tokenizer.Token()
+
 		if err := ce.writeType(); err != nil {
 			return err
 		}
 
-		if err := ce.writeIdentifier(); err != nil {
+		name := ce.tokenizer.Token()
+		if err := ce.subroutineTable.Define(name, typeName, symboltable.ARG); err != nil {
+			return err
+		}
+
+		index := ce.subroutineTable.IndexOf(name)
+		if err := ce.writeIdentifierInfo(name, "arg", "declared", &index); err != nil {
 			return err
 		}
 
@@ -111,11 +129,19 @@ func (ce *CompilationEngine) CompileParameterList() error {
 				return err
 			}
 
+			typeName := ce.tokenizer.Token()
+
 			if err := ce.writeType(); err != nil {
 				return err
 			}
 
-			if err := ce.writeIdentifier(); err != nil {
+			name := ce.tokenizer.Token()
+			if err := ce.subroutineTable.Define(name, typeName, symboltable.ARG); err != nil {
+				return err
+			}
+
+			index := ce.subroutineTable.IndexOf(name)
+			if err := ce.writeIdentifierInfo(name, "arg", "declared", &index); err != nil {
 				return err
 			}
 		}

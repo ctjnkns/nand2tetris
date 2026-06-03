@@ -20,7 +20,8 @@ func (ce *CompilationEngine) CompileClass() error {
 	}
 
 	// class name is not restricted
-	if err := ce.writeIdentifier(); err != nil {
+	ce.className = ce.tokenizer.Token()
+	if err := ce.writeIdentifierInfo(ce.className, "class", "declared", nil); err != nil {
 		return err
 	}
 

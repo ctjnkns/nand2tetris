@@ -1,0 +1,186 @@
+<class>
+  <keyword> class </keyword>
+  <identifier>
+    <name> Main </name>
+    <category> class </category>
+    <usage> declared </usage>
+  </identifier>
+  <symbol> { </symbol>
+  <classVarDec>
+    <keyword> static </keyword>
+    <keyword> boolean </keyword>
+    <identifier>
+      <name> test </name>
+      <category> static </category>
+      <index> 0 </index>
+      <usage> declared </usage>
+    </identifier>
+    <symbol> ; </symbol>
+  </classVarDec>
+  <subroutineDec>
+    <keyword> function </keyword>
+    <keyword> void </keyword>
+    <identifier>
+      <name> main </name>
+      <category> subroutine </category>
+      <usage> declared </usage>
+    </identifier>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <varDec>
+        <keyword> var </keyword>
+        <identifier>
+          <name> SquareGame </name>
+          <category> class </category>
+          <usage> used </usage>
+        </identifier>
+        <identifier>
+          <name> game </name>
+          <category> var </category>
+          <index> 0 </index>
+          <usage> declared </usage>
+        </identifier>
+        <symbol> ; </symbol>
+      </varDec>
+      <statements>
+        <letStatement>
+          <keyword> let </keyword>
+          <identifier>
+            <name> game </name>
+            <category> var </category>
+            <index> 0 </index>
+            <usage> used </usage>
+          </identifier>
+          <symbol> = </symbol>
+          <expression>
+            <term>
+              <identifier>
+                <name> game </name>
+                <category> var </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </letStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <expression>
+            <term>
+              <identifier>
+                <name> game </name>
+                <category> var </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
+              <symbol> . </symbol>
+              <identifier>
+                <name> run </name>
+                <category> subroutine </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> ( </symbol>
+              <expressionList>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </doStatement>
+        <doStatement>
+          <keyword> do </keyword>
+          <expression>
+            <term>
+              <identifier>
+                <name> game </name>
+                <category> var </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
+              <symbol> . </symbol>
+              <identifier>
+                <name> dispose </name>
+                <category> subroutine </category>
+                <usage> used </usage>
+              </identifier>
+              <symbol> ( </symbol>
+              <expressionList>
+              </expressionList>
+              <symbol> ) </symbol>
+            </term>
+          </expression>
+          <symbol> ; </symbol>
+        </doStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <subroutineDec>
+    <keyword> function </keyword>
+    <keyword> void </keyword>
+    <identifier>
+      <name> more </name>
+      <category> subroutine </category>
+      <usage> declared </usage>
+    </identifier>
+    <symbol> ( </symbol>
+    <parameterList>
+    </parameterList>
+    <symbol> ) </symbol>
+    <subroutineBody>
+      <symbol> { </symbol>
+      <varDec>
+        <keyword> var </keyword>
+        <keyword> boolean </keyword>
+        <identifier>
+          <name> b </name>
+          <category> var </category>
+          <index> 0 </index>
+          <usage> declared </usage>
+        </identifier>
+        <symbol> ; </symbol>
+      </varDec>
+      <statements>
+        <ifStatement>
+          <keyword> if </keyword>
+          <symbol> ( </symbol>
+          <expression>
+            <term>
+              <identifier>
+                <name> b </name>
+                <category> var </category>
+                <index> 0 </index>
+                <usage> used </usage>
+              </identifier>
+            </term>
+          </expression>
+          <symbol> ) </symbol>
+          <symbol> { </symbol>
+          <statements>
+          </statements>
+          <symbol> } </symbol>
+          <keyword> else </keyword>
+          <symbol> { </symbol>
+          <statements>
+          </statements>
+          <symbol> } </symbol>
+        </ifStatement>
+        <returnStatement>
+          <keyword> return </keyword>
+          <symbol> ; </symbol>
+        </returnStatement>
+      </statements>
+      <symbol> } </symbol>
+    </subroutineBody>
+  </subroutineDec>
+  <symbol> } </symbol>
+</class>
