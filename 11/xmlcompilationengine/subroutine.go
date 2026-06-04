@@ -1,4 +1,4 @@
-package compilationengine
+package xmlcompilationengine
 
 import (
 	"fmt"
@@ -29,21 +29,29 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 		}
 	}
 
-	if err := ce.consumeKeyword(""); err != nil {
+	if err := ce.writeLine("<subroutineDec>"); err != nil {
 		return err
 	}
 
-	if err := ce.consumeReturnType(); err != nil {
+	ce.indent++
+
+	// constructor|function|method
+	if err := ce.writeKeyword(""); err != nil {
+		return err
+	}
+
+	// (void|type)
+	if err := ce.writeReturnType(); err != nil {
 		return err
 	}
 
 	// subroutineName
-	ce.subroutineName = ce.tokenizer.Token()
-	if err := ce.consumeIdentifier(); err != nil {
+	name := ce.tokenizer.Token()
+	if err := ce.writeIdentifierInfo(name, "subroutine", "declared", nil); err != nil {
 		return err
 	}
 
-	if err := ce.consumeSymbol("("); err != nil {
+	if err := ce.writeSymbol("("); err != nil {
 		return err
 	}
 
@@ -51,7 +59,7 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 		return err
 	}
 
-	if err := ce.consumeSymbol(")"); err != nil {
+	if err := ce.writeSymbol(")"); err != nil {
 		return err
 	}
 
@@ -59,11 +67,19 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 		return err
 	}
 
-	return nil
+	ce.indent--
+
+	return ce.writeLine("</subroutineDec>")
 }
 
 func (ce *CompilationEngine) CompileSubroutineBody() error {
-	if err := ce.consumeSymbol("{"); err != nil {
+	if err := ce.writeLine("<subroutineBody>"); err != nil {
+		return err
+	}
+
+	ce.indent++
+
+	if err := ce.writeSymbol("{"); err != nil {
 		return err
 	}
 
@@ -71,30 +87,69 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 		return err
 	}
 
-	nLocals := ce.subroutineTable.VarCount(symboltable.VAR)
-	if err := ce.writeLine(fmt.Sprintf("function %s.%s %d", ce.className, ce.subroutineName, nLocals)); err != nil {
-		return err
-	}
-
-	ce.indent = 2
-
 	if err := ce.CompileStatements(); err != nil {
 		return err
 	}
 
-	if err := ce.consumeSymbol("}"); err != nil {
+	if err := ce.writeSymbol("}"); err != nil {
 		return err
 	}
 
-	return nil
+	ce.indent--
+
+	return ce.writeLine("</subroutineBody>")
 }
 
 func (ce *CompilationEngine) CompileParameterList() error {
-	if ce.tokenizer.Token() == ")" {
-		return nil
+	if err := ce.writeLine("<parameterList>"); err != nil {
+		return err
 	}
 
-	return fmt.Errorf("parameters not supported yet")
+	ce.indent++
+
+	if ce.tokenizer.Token() != ")" {
+		typeName := ce.tokenizer.Token()
+
+		if err := ce.writeType(); err != nil {
+			return err
+		}
+
+		name := ce.tokenizer.Token()
+		if err := ce.subroutineTable.Define(name, typeName, symboltable.ARG); err != nil {
+			return err
+		}
+
+		index := ce.subroutineTable.IndexOf(name)
+		if err := ce.writeIdentifierInfo(name, "arg", "declared", &index); err != nil {
+			return err
+		}
+
+		for ce.tokenizer.Token() == "," {
+			if err := ce.writeSymbol(","); err != nil {
+				return err
+			}
+
+			typeName := ce.tokenizer.Token()
+
+			if err := ce.writeType(); err != nil {
+				return err
+			}
+
+			name := ce.tokenizer.Token()
+			if err := ce.subroutineTable.Define(name, typeName, symboltable.ARG); err != nil {
+				return err
+			}
+
+			index := ce.subroutineTable.IndexOf(name)
+			if err := ce.writeIdentifierInfo(name, "arg", "declared", &index); err != nil {
+				return err
+			}
+		}
+	}
+
+	ce.indent--
+
+	return ce.writeLine("</parameterList>")
 }
 
 func (ce *CompilationEngine) compileSubroutines() error {

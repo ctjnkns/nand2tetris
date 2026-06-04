@@ -1,4 +1,4 @@
-package compilationengine
+package xmlcompilationengine
 
 import (
 	"fmt"
@@ -9,18 +9,24 @@ import (
 func (ce *CompilationEngine) CompileClass() error {
 	ce.tokenizer.Advance() // single advance, all other methods advance before returning
 
-	if err := ce.consumeKeyword("class"); err != nil { // get the first token ready
+	if err := ce.writeLine("<class>"); err != nil {
+		return err
+	}
+
+	ce.indent++
+
+	if err := ce.writeKeyword("class"); err != nil { // get the first token ready
 		return err
 	}
 
 	// class name is not restricted
 	ce.className = ce.tokenizer.Token()
-	if err := ce.consumeIdentifier(); err != nil {
+	if err := ce.writeIdentifierInfo(ce.className, "class", "declared", nil); err != nil {
 		return err
 	}
 
 	// opening curly brace expected after class identifier
-	if err := ce.consumeSymbol("{"); err != nil {
+	if err := ce.writeSymbol("{"); err != nil {
 		return err
 	}
 
@@ -32,11 +38,13 @@ func (ce *CompilationEngine) CompileClass() error {
 		return err
 	}
 
-	if err := ce.consumeSymbol("}"); err != nil {
+	if err := ce.writeSymbol("}"); err != nil {
 		return err
 	}
 
-	return nil
+	ce.indent--
+
+	return ce.writeLine("</class>")
 }
 
 func (ce *CompilationEngine) CompileClassVarDec() error {

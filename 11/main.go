@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	xmlExtension = ".xml"
+	vmExtension = ".vm"
 )
 
 type Analyzer struct {
@@ -26,7 +26,7 @@ type Analyzer struct {
 type tokenWriter struct {
 	tokenizer         *tokenizer.Tokenizer
 	compilationEngine compilationengine.Compiler
-	xmlFile           *os.File
+	vmFile            *os.File
 	writer            *bufio.Writer
 }
 
@@ -82,26 +82,27 @@ func (a *Analyzer) addFile(jackFile string) error {
 
 	trimmedFilename := strings.TrimSuffix(jackFile, tokenizer.JackExtension)
 
-	suffix := xmlExtension
-	if a.tokenizeMode {
-		suffix = "T" + xmlExtension
-	}
+	vmFileName := trimmedFilename + vmExtension
 
-	xmlFileName := trimmedFilename + suffix
-
-	xmlFile, err := os.Create(xmlFileName)
+	vmFile, err := os.Create(vmFileName)
 	if err != nil {
 		return err
 	}
 
-	w := bufio.NewWriter(xmlFile)
+	w := bufio.NewWriter(vmFile)
+
+	if !a.tokenizeMode {
+		if _, err := w.WriteString(fmt.Sprintf("// Compiled %s:\n", filepath.Base(jackFile))); err != nil {
+			return err
+		}
+	}
 
 	ce := compilationengine.NewCompilationEngine(t, w)
 
 	tw := &tokenWriter{
 		tokenizer:         t,
 		compilationEngine: ce,
-		xmlFile:           xmlFile,
+		vmFile:            vmFile,
 		writer:            w,
 	}
 
@@ -199,11 +200,11 @@ func (a *Analyzer) Close() {
 	for _, tokenWriter := range a.tokenWriters {
 		err := tokenWriter.writer.Flush()
 		if err != nil {
-			log.Printf("failed to flush token writer: %s", tokenWriter.xmlFile.Name())
+			log.Printf("failed to flush token writer: %s", tokenWriter.vmFile.Name())
 		}
 
-		if err := tokenWriter.xmlFile.Close(); err != nil {
-			log.Printf("failed to close xml file: %s\n", tokenWriter.xmlFile.Name())
+		if err := tokenWriter.vmFile.Close(); err != nil {
+			log.Printf("failed to close vm file: %s\n", tokenWriter.vmFile.Name())
 		}
 	}
 }

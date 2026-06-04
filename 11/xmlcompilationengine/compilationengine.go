@@ -1,4 +1,4 @@
-package compilationengine
+package xmlcompilationengine
 
 import (
 	"bufio"
@@ -24,14 +24,13 @@ type Compiler interface {
 	CompileReturn() error
 	CompileExpression() error
 	CompileTerm() error
-	CompileExpressionList() (int, error)
+	CompileExpressionList() error
 }
 
 type CompilationEngine struct {
 	tokenizer       *tokenizer.Tokenizer
 	writer          *bufio.Writer
 	className       string
-	subroutineName  string
 	classTable      *symboltable.SymbolTable
 	subroutineTable *symboltable.SymbolTable
 	indent          int
@@ -291,71 +290,4 @@ func (ce *CompilationEngine) lookup(name string) (*symboltable.SymbolTable, bool
 		return ce.classTable, true
 	}
 	return nil, false
-}
-
-func (ce *CompilationEngine) consumeIdentifier() error {
-	if ce.tokenizer.TokenType() != tokenizer.IDENTIFIER {
-		return fmt.Errorf("expected identifier; got %s", ce.tokenizer.Token())
-	}
-	return ce.checkAndAdvance()
-}
-
-func (ce *CompilationEngine) consumeSymbol(s string) error {
-	if ce.tokenizer.TokenType() != tokenizer.SYMBOL || ce.tokenizer.Token() != s {
-		return fmt.Errorf("expected symbol %s; got %s", s, ce.tokenizer.Token())
-	}
-	return ce.checkAndAdvance()
-}
-
-func (ce *CompilationEngine) consumeKeyword(s string) error {
-	if ce.tokenizer.TokenType() != tokenizer.KEYWORD || (s != "" && ce.tokenizer.Token() != s) {
-		return fmt.Errorf("expected keyword %s; got %s", s, ce.tokenizer.Token())
-	}
-	return ce.checkAndAdvance()
-}
-
-func (ce *CompilationEngine) consumeReturnType() error {
-	if ce.tokenizer.TokenType() == tokenizer.KEYWORD {
-		kw, err := ce.tokenizer.KeyWord()
-		if err != nil {
-			return err
-		}
-
-		if kw == tokenizer.VOID {
-			return ce.consumeKeyword("void")
-		}
-	}
-
-	return ce.consumeType()
-}
-
-func (ce *CompilationEngine) consumeType() error {
-	tt := ce.tokenizer.TokenType()
-	if tt != tokenizer.KEYWORD && tt != tokenizer.IDENTIFIER {
-		return fmt.Errorf("expected type; got: %s", ce.tokenizer.Token())
-	}
-
-	if tt == tokenizer.KEYWORD {
-		kw, err := ce.tokenizer.KeyWord()
-		if err != nil {
-			return err
-		}
-
-		if kw != tokenizer.INT && kw != tokenizer.CHAR && kw != tokenizer.BOOLEAN {
-			return fmt.Errorf("expected int|char|boolean; got %s", ce.tokenizer.Token())
-		}
-	}
-
-	return ce.checkAndAdvance()
-}
-
-func (ce *CompilationEngine) writeOp(op string) error {
-	switch op {
-	case "+":
-		return ce.writeLine("add")
-	case "*":
-		return ce.writeLine("call Math.multiply 2")
-	default:
-		return fmt.Errorf("unsupported op: %s", op)
-	}
 }

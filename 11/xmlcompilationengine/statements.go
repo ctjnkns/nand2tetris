@@ -1,10 +1,16 @@
-package compilationengine
+package xmlcompilationengine
 
 import (
 	"github.com/ctjnkns/nand2tetris/11/jackanalyzer/tokenizer"
 )
 
 func (ce *CompilationEngine) CompileStatements() error {
+	if err := ce.writeLine("<statements>"); err != nil {
+		return err
+	}
+
+	ce.indent++
+
 	for ce.tokenizer.HasMoreTokens() && ce.tokenizer.TokenType() == tokenizer.KEYWORD {
 		kw, err := ce.tokenizer.KeyWord()
 		if err != nil {
@@ -34,7 +40,10 @@ func (ce *CompilationEngine) CompileStatements() error {
 			}
 		}
 	}
-	return nil
+
+	ce.indent--
+
+	return ce.writeLine("</statements>")
 }
 
 func (ce *CompilationEngine) CompileLet() error {
@@ -193,7 +202,13 @@ func (ce *CompilationEngine) CompileWhile() error {
 }
 
 func (ce *CompilationEngine) CompileDo() error {
-	if err := ce.consumeKeyword("do"); err != nil {
+	if err := ce.writeLine("<doStatement>"); err != nil {
+		return err
+	}
+
+	ce.indent++
+
+	if err := ce.writeKeyword("do"); err != nil {
 		return err
 	}
 
@@ -201,15 +216,23 @@ func (ce *CompilationEngine) CompileDo() error {
 		return err
 	}
 
-	if err := ce.consumeSymbol(";"); err != nil {
+	if err := ce.writeSymbol(";"); err != nil {
 		return err
 	}
 
-	return ce.writeLine("pop temp 0") // discard return value
+	ce.indent--
+
+	return ce.writeLine("</doStatement>")
 }
 
 func (ce *CompilationEngine) CompileReturn() error {
-	if err := ce.consumeKeyword("return"); err != nil {
+	if err := ce.writeLine("<returnStatement>"); err != nil {
+		return err
+	}
+
+	ce.indent++
+
+	if err := ce.writeKeyword("return"); err != nil {
 		return err
 	}
 
@@ -217,15 +240,13 @@ func (ce *CompilationEngine) CompileReturn() error {
 		if err := ce.CompileExpression(); err != nil {
 			return err
 		}
-	} else {
-		if err := ce.writeLine("push constant 0"); err != nil {
-			return err
-		}
 	}
 
-	if err := ce.consumeSymbol(";"); err != nil {
+	if err := ce.writeSymbol(";"); err != nil {
 		return err
 	}
 
-	return ce.writeLine("return")
+	ce.indent--
+
+	return ce.writeLine("</returnStatement>")
 }

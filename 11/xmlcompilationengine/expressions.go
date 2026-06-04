@@ -1,33 +1,30 @@
-package compilationengine
+package xmlcompilationengine
 
-import (
-	"fmt"
-
-	"github.com/ctjnkns/nand2tetris/11/jackanalyzer/tokenizer"
-)
+import "github.com/ctjnkns/nand2tetris/11/jackanalyzer/tokenizer"
 
 func (ce *CompilationEngine) CompileExpression() error {
+	if err := ce.writeLine("<expression>"); err != nil {
+		return err
+	}
+
+	ce.indent++
+
 	if err := ce.CompileTerm(); err != nil {
 		return err
 	}
 
 	for isOp(ce.tokenizer.Token()) {
-		// capture the op first
-		op := ce.tokenizer.Token()
-		if err := ce.consumeSymbol(op); err != nil {
+		if err := ce.writeSymbol(ce.tokenizer.Token()); err != nil {
 			return err
 		}
-
 		if err := ce.CompileTerm(); err != nil {
-			return err
-		}
-
-		if err := ce.writeOp(op); err != nil {
 			return err
 		}
 	}
 
-	return nil
+	ce.indent--
+
+	return ce.writeLine("</expression>")
 }
 
 func isOp(s string) bool {
@@ -39,14 +36,15 @@ func isOp(s string) bool {
 }
 
 func (ce *CompilationEngine) CompileTerm() error {
+	if err := ce.writeLine("<term>"); err != nil {
+		return err
+	}
+
+	ce.indent++
+
 	switch ce.tokenizer.TokenType() {
 	case tokenizer.INT_CONST:
-		value := ce.tokenizer.Token()
-		if err := ce.writeLine(fmt.Sprintf("push constant %s", value)); err != nil {
-			return err
-		}
-
-		if err := ce.checkAndAdvance(); err != nil {
+		if err := ce.writeExpectedAndAdvance(tokenizer.INT_CONST, ""); err != nil {
 			return err
 		}
 	case tokenizer.STRING_CONST:
@@ -76,52 +74,46 @@ func (ce *CompilationEngine) CompileTerm() error {
 			}
 
 		case "(":
-			if err := ce.consumeIdentifier(); err != nil {
+			if err := ce.writeIdentifierInfo(name, "subroutine", "used", nil); err != nil {
 				return err
 			}
-			if err := ce.consumeSymbol("("); err != nil {
+			if err := ce.writeSymbol("("); err != nil {
 				return err
 			}
-			nArgs, err := ce.CompileExpressionList()
-			if err != nil {
+			if err := ce.CompileExpressionList(); err != nil {
 				return err
 			}
-			if err := ce.consumeSymbol(")"); err != nil {
-				return err
-			}
-			if err := ce.writeLine(fmt.Sprintf("call %s.%s %d", ce.className, name, nArgs)); err != nil {
+			if err := ce.writeSymbol(")"); err != nil {
 				return err
 			}
 
 		case ".":
-			className := name
-			if err := ce.consumeIdentifier(); err != nil {
-				return err
+			if _, ok := ce.lookup(name); ok {
+				if err := ce.writeVariableUse(name); err != nil {
+					return err
+				}
+			} else {
+				if err := ce.writeIdentifierInfo(name, "class", "used", nil); err != nil {
+					return err
+				}
 			}
 
-			if err := ce.consumeSymbol("."); err != nil {
+			if err := ce.writeSymbol("."); err != nil {
 				return err
 			}
 
 			subroutineName := ce.tokenizer.Token()
-			if err := ce.consumeIdentifier(); err != nil {
+			if err := ce.writeIdentifierInfo(subroutineName, "subroutine", "used", nil); err != nil {
 				return err
 			}
 
-			if err := ce.consumeSymbol("("); err != nil {
+			if err := ce.writeSymbol("("); err != nil {
 				return err
 			}
-
-			nArgs, err := ce.CompileExpressionList()
-			if err != nil {
+			if err := ce.CompileExpressionList(); err != nil {
 				return err
 			}
-
-			if err := ce.consumeSymbol(")"); err != nil {
-				return err
-			}
-
-			if err := ce.writeLine(fmt.Sprintf("call %s.%s %d", className, subroutineName, nArgs)); err != nil {
+			if err := ce.writeSymbol(")"); err != nil {
 				return err
 			}
 
@@ -132,13 +124,13 @@ func (ce *CompilationEngine) CompileTerm() error {
 		}
 	case tokenizer.SYMBOL:
 		if ce.tokenizer.Token() == "(" {
-			if err := ce.consumeSymbol("("); err != nil {
+			if err := ce.writeSymbol("("); err != nil {
 				return err
 			}
 			if err := ce.CompileExpression(); err != nil {
 				return err
 			}
-			if err := ce.consumeSymbol(")"); err != nil {
+			if err := ce.writeSymbol(")"); err != nil {
 				return err
 			}
 		} else {
@@ -152,29 +144,33 @@ func (ce *CompilationEngine) CompileTerm() error {
 		}
 	}
 
-	return nil
+	ce.indent--
+
+	return ce.writeLine("</term>")
 }
 
-func (ce *CompilationEngine) CompileExpressionList() (int, error) {
-	nArgs := 0
+func (ce *CompilationEngine) CompileExpressionList() error {
+	if err := ce.writeLine("<expressionList>"); err != nil {
+		return err
+	}
+
+	ce.indent++
 
 	if ce.tokenizer.Token() != ")" {
 		if err := ce.CompileExpression(); err != nil {
-			return 0, err
+			return err
 		}
-
-		nArgs++
-
 		for ce.tokenizer.Token() == "," {
-			if err := ce.consumeSymbol(","); err != nil {
-				return 0, err
+			if err := ce.writeSymbol(","); err != nil {
+				return err
 			}
 			if err := ce.CompileExpression(); err != nil {
-				return 0, err
+				return err
 			}
-			nArgs++
 		}
 	}
 
-	return nArgs, nil
+	ce.indent--
+
+	return ce.writeLine("</expressionList>")
 }
