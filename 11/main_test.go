@@ -120,3 +120,88 @@ func TestRun(t *testing.T) {
 		})
 	}
 }
+
+func TestRunVM(t *testing.T) {
+	tests := []struct {
+		name     string
+		argument []string
+		outputs  map[string]string // outputFile -> expectedVM
+		wantErr  error
+	}{
+		{
+			name:     "Seven",
+			argument: []string{"./testdata/Seven/Main.jack"},
+			outputs: map[string]string{
+				"./testdata/Seven/Main.vm": "./testdata/golden/Seven/Main.vm",
+			},
+		},
+		{
+			name:     "ConvertToBin",
+			argument: []string{"./testdata/ConvertToBin/Main.jack"},
+			outputs: map[string]string{
+				"./testdata/ConvertToBin/Main.vm": "./testdata/golden/ConvertToBin/Main.vm",
+			},
+		},
+		{
+			name:     "Square",
+			argument: []string{"./testdata/Square"},
+			outputs: map[string]string{
+				"./testdata/Square/Main.vm":       "./testdata/golden/Square/Main.vm",
+				"./testdata/Square/Square.vm":     "./testdata/golden/Square/Square.vm",
+				"./testdata/Square/SquareGame.vm": "./testdata/golden/Square/SquareGame.vm",
+			},
+		},
+		{
+			name:     "Average",
+			argument: []string{"./testdata/Average"},
+			outputs: map[string]string{
+				"./testdata/Average/Main.vm": "./testdata/golden/Average/Main.vm",
+			},
+		},
+		{
+			name:     "Pong",
+			argument: []string{"./testdata/Pong"},
+			outputs: map[string]string{
+				"./testdata/Pong/Ball.vm":     "./testdata/golden/Pong/Ball.vm",
+				"./testdata/Pong/Bat.vm":      "./testdata/golden/Pong/Bat.vm",
+				"./testdata/Pong/Main.vm":     "./testdata/golden/Pong/Main.vm",
+				"./testdata/Pong/PongGame.vm": "./testdata/golden/Pong/PongGame.vm",
+			},
+		},
+		{
+			name:     "ComplexArrays",
+			argument: []string{"./testdata/ComplexArrays"},
+			outputs: map[string]string{
+				"./testdata/ComplexArrays/Main.vm": "./testdata/golden/ComplexArrays/Main.vm",
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			err := run(test.argument)
+			if test.wantErr != nil {
+				assert.EqualError(t, err, test.wantErr.Error())
+				return
+			}
+			if err != nil {
+				t.Fatalf("unexpected error: %v", err)
+			}
+
+			for out, exp := range test.outputs {
+				want, err := os.ReadFile(exp)
+				if err != nil {
+					t.Fatalf("failed to open expected vm file %s: %v", exp, err)
+				}
+				want = bytes.ReplaceAll(want, []byte("\r"), nil)
+
+				got, err := os.ReadFile(out)
+				if err != nil {
+					t.Fatalf("failed to open output vm file %s: %v", out, err)
+				}
+
+				assert.Equal(t, want, got, fmt.Sprintf("%s mismatch:\ngot:\n%s\nwant:\n%s\n", out, string(got), string(want)))
+			}
+		})
+	}
+}

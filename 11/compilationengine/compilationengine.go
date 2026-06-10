@@ -51,29 +51,6 @@ func NewCompilationEngine(tokenizer *tokenizer.Tokenizer, writer *bufio.Writer) 
 	return ce
 }
 
-func (ce *CompilationEngine) writeType() error {
-	tt := ce.tokenizer.TokenType()
-	if tt != tokenizer.KEYWORD && tt != tokenizer.IDENTIFIER {
-		return fmt.Errorf("expected type; got: %s", ce.tokenizer.Token())
-	}
-
-	if tt == tokenizer.KEYWORD {
-		kw, err := ce.tokenizer.KeyWord()
-		if err != nil {
-			return err
-		}
-
-		if kw != tokenizer.INT && kw != tokenizer.CHAR && kw != tokenizer.BOOLEAN {
-			return fmt.Errorf("expected int|char|boolean; got %s", ce.tokenizer.Token())
-		}
-
-		return ce.writeExpectedAndAdvance(ce.tokenizer.TokenType(), "")
-	}
-
-	name := ce.tokenizer.Token()
-	return ce.writeIdentifierInfo(name, "class", "used", nil)
-}
-
 func (ce *CompilationEngine) writeVarDec() error {
 	kw, err := ce.tokenizer.KeyWord()
 	if err != nil {
@@ -143,26 +120,6 @@ func (ce *CompilationEngine) writeVarDec() error {
 	return ce.consumeSymbol(";")
 }
 
-func (ce *CompilationEngine) writeKeyword(s string) error {
-	return ce.writeExpectedAndAdvance(tokenizer.KEYWORD, s)
-}
-
-func (ce *CompilationEngine) writeExpectedAndAdvance(expectedType int, expectedToken string) error {
-	if ce.tokenizer.TokenType() != expectedType || (expectedToken != "" && ce.tokenizer.Token() != expectedToken) {
-		return fmt.Errorf("wrong type or token; expectedType: %d; got: %d, expectedToken: %s, got: %s", expectedType, ce.tokenizer.TokenType(), expectedToken, ce.tokenizer.Token())
-	}
-
-	return ce.writeLineAndAdvance(fmt.Sprintf("<%s> %s </%s>", ce.tokenizer.TokenTypeString(), escapeXML(ce.tokenizer.Token()), ce.tokenizer.TokenTypeString()))
-}
-
-func (ce *CompilationEngine) writeLineAndAdvance(line string) error {
-	if err := ce.writeLine(line); err != nil {
-		return err
-	}
-
-	return ce.checkAndAdvance()
-}
-
 func (ce *CompilationEngine) writeLine(line string) error {
 	indent := strings.Repeat("  ", ce.indent)
 	_, err := ce.writer.WriteString(indent + line)
@@ -183,55 +140,6 @@ func (ce *CompilationEngine) checkAndAdvance() error {
 	}
 
 	return nil
-}
-
-func escapeXML(s string) string {
-	s = strings.ReplaceAll(s, "&", "&amp;")
-	s = strings.ReplaceAll(s, "<", "&lt;")
-	s = strings.ReplaceAll(s, ">", "&gt;")
-	s = strings.ReplaceAll(s, "\"", "&quot;")
-	return s
-}
-
-func (ce *CompilationEngine) writeIdentifierInfo(name, category, usage string, index *int) error {
-	if ce.tokenizer.TokenType() != tokenizer.IDENTIFIER {
-		return fmt.Errorf("expected identifier; got %s", ce.tokenizer.Token())
-	}
-	if ce.tokenizer.Token() != name {
-		return fmt.Errorf("expected identifier %s; got %s", name, ce.tokenizer.Token())
-	}
-
-	if err := ce.writeLine("<identifier>"); err != nil {
-		return err
-	}
-
-	ce.indent++
-
-	if err := ce.writeLine(fmt.Sprintf("<name> %s </name>", escapeXML(name))); err != nil {
-		return err
-	}
-
-	if err := ce.writeLine(fmt.Sprintf("<category> %s </category>", category)); err != nil {
-		return err
-	}
-
-	if index != nil {
-		if err := ce.writeLine(fmt.Sprintf("<index> %d </index>", *index)); err != nil {
-			return err
-		}
-	}
-
-	if err := ce.writeLine(fmt.Sprintf("<usage> %s </usage>", usage)); err != nil {
-		return err
-	}
-
-	ce.indent--
-
-	if err := ce.writeLine("</identifier>"); err != nil {
-		return err
-	}
-
-	return ce.checkAndAdvance()
 }
 
 func (ce *CompilationEngine) writeVariableUse(name string) error {
