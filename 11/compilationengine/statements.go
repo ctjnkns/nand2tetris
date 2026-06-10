@@ -1,6 +1,8 @@
 package compilationengine
 
 import (
+	"fmt"
+
 	"github.com/ctjnkns/nand2tetris/11/jackanalyzer/tokenizer"
 )
 
@@ -38,35 +40,34 @@ func (ce *CompilationEngine) CompileStatements() error {
 }
 
 func (ce *CompilationEngine) CompileLet() error {
-	if err := ce.writeLine("<letStatement>"); err != nil {
-		return err
-	}
-
-	ce.indent++
-
-	if err := ce.writeKeyword("let"); err != nil {
+	if err := ce.consumeKeyword("let"); err != nil {
 		return err
 	}
 
 	// varName
 	name := ce.tokenizer.Token()
-	if err := ce.writeVariableUse(name); err != nil {
+	table, ok := ce.lookup(name)
+	if !ok {
+		return fmt.Errorf("identifier not found: %s")
+	}
+
+	kind := table.KindOf(name)
+	index := table.IndexOf(name)
+
+	segment, err := kindSegment(kind)
+	if err != nil {
+		return err
+	}
+
+	if err := ce.consumeIdentifier(); err != nil {
 		return err
 	}
 
 	if ce.tokenizer.Token() == "[" {
-		if err := ce.writeSymbol("["); err != nil {
-			return err
-		}
-		if err := ce.CompileExpression(); err != nil {
-			return err
-		}
-		if err := ce.writeSymbol("]"); err != nil {
-			return err
-		}
+		return fmt.Errorf("array assignmnet not yet supported")
 	}
 
-	if err := ce.writeSymbol("="); err != nil {
+	if err := ce.consumeSymbol("="); err != nil {
 		return err
 	}
 
@@ -74,27 +75,22 @@ func (ce *CompilationEngine) CompileLet() error {
 		return err
 	}
 
-	if err := ce.writeSymbol(";"); err != nil {
+	if err := ce.consumeSymbol(";"); err != nil {
 		return err
 	}
 
-	ce.indent--
-
-	return ce.writeLine("</letStatement>")
+	return ce.writeLine(fmt.Sprintf("pop %s %d", segment, index))
 }
 
 func (ce *CompilationEngine) CompileIf() error {
-	if err := ce.writeLine("<ifStatement>"); err != nil {
+	endLabel := ce.nextLabel()
+	falseLabel := ce.nextLabel()
+
+	if err := ce.consumeKeyword("if"); err != nil {
 		return err
 	}
 
-	ce.indent++
-
-	if err := ce.writeKeyword("if"); err != nil {
-		return err
-	}
-
-	if err := ce.writeSymbol("("); err != nil {
+	if err := ce.consumeSymbol("("); err != nil {
 		return err
 	}
 
@@ -102,11 +98,19 @@ func (ce *CompilationEngine) CompileIf() error {
 		return err
 	}
 
-	if err := ce.writeSymbol(")"); err != nil {
+	if err := ce.consumeSymbol(")"); err != nil {
 		return err
 	}
 
-	if err := ce.writeSymbol("{"); err != nil {
+	if err := ce.writeLine("not"); err != nil {
+		return err
+	}
+
+	if err := ce.writeLine(fmt.Sprintf("if-goto %s", falseLabel)); err != nil {
+		return err
+	}
+
+	if err := ce.consumeSymbol("{"); err != nil {
 		return err
 	}
 
@@ -114,9 +118,19 @@ func (ce *CompilationEngine) CompileIf() error {
 		return err
 	}
 
-	if err := ce.writeSymbol("}"); err != nil {
+	if err := ce.consumeSymbol("}"); err != nil {
 		return err
 	}
+
+	if err := ce.writeLine(fmt.Sprintf("goto %s", endLabel)); err != nil {
+		return err
+	}
+
+	ce.indent = 0
+	if err := ce.writeLine(fmt.Sprintf("label %s", falseLabel)); err != nil {
+		return err
+	}
+	ce.indent = 2
 
 	if ce.tokenizer.TokenType() == tokenizer.KEYWORD {
 		kw, err := ce.tokenizer.KeyWord()
@@ -125,11 +139,11 @@ func (ce *CompilationEngine) CompileIf() error {
 		}
 
 		if kw == tokenizer.ELSE {
-			if err := ce.writeKeyword("else"); err != nil {
+			if err := ce.consumeKeyword("else"); err != nil {
 				return err
 			}
 
-			if err := ce.writeSymbol("{"); err != nil {
+			if err := ce.consumeSymbol("{"); err != nil {
 				return err
 			}
 
@@ -137,29 +151,42 @@ func (ce *CompilationEngine) CompileIf() error {
 				return err
 			}
 
-			if err := ce.writeSymbol("}"); err != nil {
+			if err := ce.consumeSymbol("}"); err != nil {
 				return err
 			}
 		}
 	}
 
-	ce.indent--
+	ce.indent = 0
+	if err := ce.writeLine(fmt.Sprintf("label %s", endLabel)); err != nil {
+		return err
+	}
+	ce.indent = 2
 
-	return ce.writeLine("</ifStatement>")
+	return nil
+}
+
+func (ce *CompilationEngine) nextLabel() string {
+	label := fmt.Sprintf("%s_%d", ce.className, ce.labelIndex)
+	ce.labelIndex++
+	return label
 }
 
 func (ce *CompilationEngine) CompileWhile() error {
-	if err := ce.writeLine("<whileStatement>"); err != nil {
+	startLabel := ce.nextLabel()
+	endLabel := ce.nextLabel()
+
+	ce.indent = 0
+	if err := ce.writeLine(fmt.Sprintf("label %s", startLabel)); err != nil {
+		return err
+	}
+	ce.indent = 2
+
+	if err := ce.consumeKeyword("while"); err != nil {
 		return err
 	}
 
-	ce.indent++
-
-	if err := ce.writeKeyword("while"); err != nil {
-		return err
-	}
-
-	if err := ce.writeSymbol("("); err != nil {
+	if err := ce.consumeSymbol("("); err != nil {
 		return err
 	}
 
@@ -167,11 +194,19 @@ func (ce *CompilationEngine) CompileWhile() error {
 		return err
 	}
 
-	if err := ce.writeSymbol(")"); err != nil {
+	if err := ce.consumeSymbol(")"); err != nil {
 		return err
 	}
 
-	if err := ce.writeSymbol("{"); err != nil {
+	if err := ce.writeLine("not"); err != nil {
+		return err
+	}
+
+	if err := ce.writeLine(fmt.Sprintf("if-goto %s", endLabel)); err != nil {
+		return err
+	}
+
+	if err := ce.consumeSymbol("{"); err != nil {
 		return err
 	}
 
@@ -179,15 +214,19 @@ func (ce *CompilationEngine) CompileWhile() error {
 		return err
 	}
 
-	if err := ce.writeSymbol("}"); err != nil {
+	if err := ce.consumeSymbol("}"); err != nil {
 		return err
 	}
 
-	ce.indent--
-
-	if err := ce.writeLine("</whileStatement>"); err != nil {
+	if err := ce.writeLine(fmt.Sprintf("goto %s", startLabel)); err != nil {
 		return err
 	}
+
+	ce.indent = 0
+	if err := ce.writeLine(fmt.Sprintf("label %s", endLabel)); err != nil {
+		return err
+	}
+	ce.indent = 2
 
 	return nil
 }

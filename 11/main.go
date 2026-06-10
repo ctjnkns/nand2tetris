@@ -91,12 +91,6 @@ func (a *Analyzer) addFile(jackFile string) error {
 
 	w := bufio.NewWriter(vmFile)
 
-	if !a.tokenizeMode {
-		if _, err := w.WriteString(fmt.Sprintf("// Compiled %s:\n", filepath.Base(jackFile))); err != nil {
-			return err
-		}
-	}
-
 	ce := compilationengine.NewCompilationEngine(t, w)
 
 	tw := &tokenWriter{

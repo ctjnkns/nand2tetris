@@ -34,6 +34,7 @@ type CompilationEngine struct {
 	subroutineName  string
 	classTable      *symboltable.SymbolTable
 	subroutineTable *symboltable.SymbolTable
+	labelIndex      int
 	indent          int
 }
 
@@ -105,14 +106,14 @@ func (ce *CompilationEngine) writeVarDec() error {
 	}
 
 	// static|field|var
-	if err := ce.writeKeyword(""); err != nil {
+	if err := ce.consumeKeyword(""); err != nil {
 		return err
 	}
 
 	typeName := ce.tokenizer.Token()
 
 	// int|char|boolean|className
-	if err := ce.writeType(); err != nil {
+	if err := ce.consumeType(); err != nil {
 		return err
 	}
 
@@ -129,16 +130,14 @@ func (ce *CompilationEngine) writeVarDec() error {
 		return err
 	}
 
-	index := table.IndexOf(name)
-	category := kindCategory(kind)
 	// varName
-	if err := ce.writeIdentifierInfo(name, category, "declared", &index); err != nil {
+	if err := ce.consumeIdentifier(); err != nil {
 		return err
 	}
 
 	// (, varName)*
 	for ce.tokenizer.TokenType() == tokenizer.SYMBOL && ce.tokenizer.Token() == "," {
-		if err := ce.writeSymbol(","); err != nil {
+		if err := ce.consumeSymbol(","); err != nil {
 			return err
 		}
 
@@ -148,16 +147,12 @@ func (ce *CompilationEngine) writeVarDec() error {
 			return err
 		}
 
-		index := table.IndexOf(name)
-		category := kindCategory(kind)
-
-		if err := ce.writeIdentifierInfo(name, category, "declared", &index); err != nil {
+		if err := ce.consumeIdentifier(); err != nil {
 			return err
 		}
-
 	}
 
-	return ce.writeSymbol(";")
+	return ce.consumeSymbol(";")
 }
 
 func (ce *CompilationEngine) writeSymbol(s string) error {
@@ -263,9 +258,17 @@ func (ce *CompilationEngine) writeVariableUse(name string) error {
 
 	kind := table.KindOf(name)
 	index := table.IndexOf(name)
-	category := kindCategory(kind)
 
-	return ce.writeIdentifierInfo(name, category, "used", &index)
+	segment, err := kindSegment(kind)
+	if err != nil {
+		return err
+	}
+
+	if err := ce.consumeIdentifier(); err != nil {
+		return err
+	}
+
+	return ce.writeLine(fmt.Sprintf("push %s %d", segment, index))
 }
 
 func kindCategory(kind symboltable.Kind) string {
@@ -353,9 +356,38 @@ func (ce *CompilationEngine) writeOp(op string) error {
 	switch op {
 	case "+":
 		return ce.writeLine("add")
+	case "-":
+		return ce.writeLine("sub")
 	case "*":
 		return ce.writeLine("call Math.multiply 2")
+	case "/":
+		return ce.writeLine("call Math.divide 2")
+	case "&":
+		return ce.writeLine("and")
+	case "|":
+		return ce.writeLine("or")
+	case "<":
+		return ce.writeLine("lt")
+	case ">":
+		return ce.writeLine("gt")
+	case "=":
+		return ce.writeLine("eq")
 	default:
 		return fmt.Errorf("unsupported op: %s", op)
+	}
+}
+
+func kindSegment(kind symboltable.Kind) (string, error) {
+	switch kind {
+	case symboltable.STATIC:
+		return "static", nil
+	case symboltable.FIELD:
+		return "this", nil
+	case symboltable.ARG:
+		return "argument", nil
+	case symboltable.VAR:
+		return "local", nil
+	default:
+		return "", fmt.Errorf("unsupported variable kind: %d", kind)
 	}
 }

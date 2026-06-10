@@ -49,19 +49,11 @@ func (ce *CompilationEngine) CompileClassVarDec() error {
 		return fmt.Errorf("token should be field or static when calling CompileClassVarDec; received: %d", kw)
 	}
 
-	if err := ce.writeLine("<classVarDec>"); err != nil {
-		return err
-	}
-
-	ce.indent++
-
 	if err := ce.writeVarDec(); err != nil {
 		return err
 	}
 
-	ce.indent--
-
-	return ce.writeLine("</classVarDec>")
+	return nil
 }
 
 func (ce *CompilationEngine) compileClassVarDecs() error {

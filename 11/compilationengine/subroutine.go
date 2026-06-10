@@ -72,6 +72,8 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 	}
 
 	nLocals := ce.subroutineTable.VarCount(symboltable.VAR)
+
+	ce.indent = 0
 	if err := ce.writeLine(fmt.Sprintf("function %s.%s %d", ce.className, ce.subroutineName, nLocals)); err != nil {
 		return err
 	}
@@ -94,7 +96,31 @@ func (ce *CompilationEngine) CompileParameterList() error {
 		return nil
 	}
 
-	return fmt.Errorf("parameters not supported yet")
+	for {
+		typeName := ce.tokenizer.Token()
+		if err := ce.consumeType(); err != nil {
+			return err
+		}
+
+		name := ce.tokenizer.Token()
+		if err := ce.subroutineTable.Define(name, typeName, symboltable.ARG); err != nil {
+			return err
+		}
+
+		if err := ce.consumeIdentifier(); err != nil {
+			return err
+		}
+
+		if ce.tokenizer.Token() != "," {
+			break
+		}
+
+		if err := ce.consumeSymbol(","); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (ce *CompilationEngine) compileSubroutines() error {
@@ -126,19 +152,11 @@ func (ce *CompilationEngine) CompileVarDec() error {
 		return fmt.Errorf("token should be var when calling CompileVarDec; received: %d", kw)
 	}
 
-	if err := ce.writeLine("<varDec>"); err != nil {
-		return err
-	}
-
-	ce.indent++
-
 	if err := ce.writeVarDec(); err != nil {
 		return err
 	}
 
-	ce.indent--
-
-	return ce.writeLine("</varDec>")
+	return nil
 }
 
 func (ce *CompilationEngine) compileVarDecs() error {

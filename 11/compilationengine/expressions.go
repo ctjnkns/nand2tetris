@@ -54,7 +54,32 @@ func (ce *CompilationEngine) CompileTerm() error {
 			return err
 		}
 	case tokenizer.KEYWORD:
-		if err := ce.writeKeyword(""); err != nil {
+		kw, err := ce.tokenizer.KeyWord()
+		if err != nil {
+			return err
+		}
+
+		switch kw {
+		case tokenizer.TRUE:
+			if err := ce.writeLine("push constant 1"); err != nil {
+				return err
+			}
+			if err := ce.writeLine("neg"); err != nil {
+				return err
+			}
+		case tokenizer.FALSE, tokenizer.NULL:
+			if err := ce.writeLine("push constant 0"); err != nil {
+				return err
+			}
+		case tokenizer.THIS:
+			if err := ce.writeLine("push pointer 0"); err != nil {
+				return err
+			}
+		default:
+			return fmt.Errorf("unsupported keyword constant: %s", ce.tokenizer.Token())
+		}
+
+		if err := ce.checkAndAdvance(); err != nil {
 			return err
 		}
 	case tokenizer.IDENTIFIER:
@@ -143,11 +168,22 @@ func (ce *CompilationEngine) CompileTerm() error {
 			}
 		} else {
 			// unaryOp: - or ~
-			if err := ce.writeSymbol(ce.tokenizer.Token()); err != nil {
+			op := ce.tokenizer.Token()
+
+			if err := ce.consumeSymbol(ce.tokenizer.Token()); err != nil {
 				return err
 			}
 			if err := ce.CompileTerm(); err != nil {
 				return err
+			}
+
+			switch op {
+			case "-":
+				return ce.writeLine("neg")
+			case "~":
+				return ce.writeLine("not")
+			default:
+				return fmt.Errorf("unsupported unary op: %s", op)
 			}
 		}
 	}
