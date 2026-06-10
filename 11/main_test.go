@@ -18,21 +18,21 @@ func TestRun(t *testing.T) {
 	}{
 		{
 			name:     "ExpressionLessSquare Main",
-			argument: []string{"./testdata/ExpressionLessSquare/Main.jack"},
+			argument: []string{"-xml", "./testdata/ExpressionLessSquare/Main.jack"},
 			outputs: map[string]string{
 				"./testdata/ExpressionLessSquare/Main.xml": "./testdata/golden/ExpressionLessSquare/Main.xml",
 			},
 		},
 		{
 			name:     "ExpressionLessSquare Square",
-			argument: []string{"./testdata/ExpressionLessSquare/Square.jack"},
+			argument: []string{"-xml", "./testdata/ExpressionLessSquare/Square.jack"},
 			outputs: map[string]string{
 				"./testdata/ExpressionLessSquare/Square.xml": "./testdata/golden/ExpressionLessSquare/Square.xml",
 			},
 		},
 		{
 			name:     "ExpressionLessSquare SquareGame",
-			argument: []string{"./testdata/ExpressionLessSquare/SquareGame.jack"},
+			argument: []string{"-xml", "./testdata/ExpressionLessSquare/SquareGame.jack"},
 			outputs: map[string]string{
 				"./testdata/ExpressionLessSquare/SquareGame.xml": "./testdata/golden/ExpressionLessSquare/SquareGame.xml",
 			},
@@ -60,7 +60,7 @@ func TestRun(t *testing.T) {
 		},
 		{
 			name:     "Square",
-			argument: []string{"./testdata/Square"},
+			argument: []string{"-xml", "./testdata/Square"},
 			outputs: map[string]string{
 				"./testdata/Square/Main.xml":       "./testdata/golden/Square/Main.xml",
 				"./testdata/Square/Square.xml":     "./testdata/golden/Square/Square.xml",
@@ -78,7 +78,7 @@ func TestRun(t *testing.T) {
 		},
 		{
 			name:     "ArrayTest",
-			argument: []string{"./testdata/ArrayTest"},
+			argument: []string{"-xml", "./testdata/ArrayTest"},
 			outputs: map[string]string{
 				"./testdata/ArrayTest/Main.xml": "./testdata/golden/ArrayTest/Main.xml",
 			},

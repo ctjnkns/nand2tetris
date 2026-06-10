@@ -24,7 +24,7 @@ type Compiler interface {
 	CompileReturn() error
 	CompileExpression() error
 	CompileTerm() error
-	CompileExpressionList() error
+	CompileExpressionList() (int, error)
 }
 
 type CompilationEngine struct {

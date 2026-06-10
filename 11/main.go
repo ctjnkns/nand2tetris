@@ -12,15 +12,18 @@ import (
 
 	"github.com/ctjnkns/nand2tetris/11/jackanalyzer/compilationengine"
 	"github.com/ctjnkns/nand2tetris/11/jackanalyzer/tokenizer"
+	xmlcompilationengine "github.com/ctjnkns/nand2tetris/11/jackanalyzer/xmlcompilationengine"
 )
 
 const (
-	vmExtension = ".vm"
+	vmExtension  = ".vm"
+	xmlExtension = ".xml"
 )
 
 type Analyzer struct {
 	tokenWriters []*tokenWriter
 	tokenizeMode bool
+	xmlMode      bool
 }
 
 type tokenWriter struct {
@@ -30,7 +33,7 @@ type tokenWriter struct {
 	writer            *bufio.Writer
 }
 
-func NewAnalyzer(args []string, tokenize bool) (*Analyzer, error) {
+func NewAnalyzer(args []string, tokenize bool, xmlMode bool) (*Analyzer, error) {
 	if len(args) < 1 {
 		return nil, errors.New("must provide .jack file or folder as an argument")
 	}
@@ -62,7 +65,10 @@ func NewAnalyzer(args []string, tokenize bool) (*Analyzer, error) {
 		jackFileNames = []string{clean}
 	}
 
-	a := &Analyzer{tokenizeMode: tokenize}
+	a := &Analyzer{
+		tokenizeMode: tokenize,
+		xmlMode:      xmlMode,
+	}
 
 	for _, jackFile := range jackFileNames {
 		if err := a.addFile(jackFile); err != nil {
@@ -82,16 +88,26 @@ func (a *Analyzer) addFile(jackFile string) error {
 
 	trimmedFilename := strings.TrimSuffix(jackFile, tokenizer.JackExtension)
 
-	vmFileName := trimmedFilename + vmExtension
+	outputFileName := trimmedFilename + vmExtension
+	if a.tokenizeMode {
+		outputFileName = trimmedFilename + "T" + xmlExtension
+	} else if a.xmlMode {
+		outputFileName = trimmedFilename + xmlExtension
+	}
 
-	vmFile, err := os.Create(vmFileName)
+	vmFile, err := os.Create(outputFileName)
 	if err != nil {
 		return err
 	}
 
 	w := bufio.NewWriter(vmFile)
 
-	ce := compilationengine.NewCompilationEngine(t, w)
+	var ce compilationengine.Compiler
+	if a.xmlMode {
+		ce = xmlcompilationengine.NewCompilationEngine(t, w)
+	} else {
+		ce = compilationengine.NewCompilationEngine(t, w)
+	}
 
 	tw := &tokenWriter{
 		tokenizer:         t,
@@ -114,16 +130,21 @@ func main() {
 func run(args []string) error {
 	fs := flag.NewFlagSet("jackanalyzer", flag.ContinueOnError)
 	fs.Usage = func() {
-		fmt.Fprintf(fs.Output(), "Usage: %s [-tokenize] <file.jack|dir>\n", fs.Name())
+		fmt.Fprintf(fs.Output(), "Usage: %s [-tokenize|-xml] <file.jack|dir>\n", fs.Name())
 		fs.PrintDefaults()
 	}
 	tokenize := fs.Bool("tokenize", false, "emit T.xml token file")
+	xmlMode := fs.Bool("xml", false, "emit parse XML instead of VM code")
 
 	if err := fs.Parse(args); err != nil {
 		return err
 	}
 
-	a, err := NewAnalyzer(fs.Args(), *tokenize)
+	if *tokenize && *xmlMode {
+		return errors.New("cannot use -tokenize and -xml together")
+	}
+
+	a, err := NewAnalyzer(fs.Args(), *tokenize, *xmlMode)
 	if err != nil {
 		return err
 	}

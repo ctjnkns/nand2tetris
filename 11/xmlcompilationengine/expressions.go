@@ -80,7 +80,7 @@ func (ce *CompilationEngine) CompileTerm() error {
 			if err := ce.writeSymbol("("); err != nil {
 				return err
 			}
-			if err := ce.CompileExpressionList(); err != nil {
+			if _, err := ce.CompileExpressionList(); err != nil {
 				return err
 			}
 			if err := ce.writeSymbol(")"); err != nil {
@@ -110,7 +110,7 @@ func (ce *CompilationEngine) CompileTerm() error {
 			if err := ce.writeSymbol("("); err != nil {
 				return err
 			}
-			if err := ce.CompileExpressionList(); err != nil {
+			if _, err := ce.CompileExpressionList(); err != nil {
 				return err
 			}
 			if err := ce.writeSymbol(")"); err != nil {
@@ -149,28 +149,32 @@ func (ce *CompilationEngine) CompileTerm() error {
 	return ce.writeLine("</term>")
 }
 
-func (ce *CompilationEngine) CompileExpressionList() error {
+func (ce *CompilationEngine) CompileExpressionList() (int, error) {
 	if err := ce.writeLine("<expressionList>"); err != nil {
-		return err
+		return 0, err
 	}
 
 	ce.indent++
 
+	nArgs := 0
 	if ce.tokenizer.Token() != ")" {
 		if err := ce.CompileExpression(); err != nil {
-			return err
+			return 0, err
 		}
+		nArgs++
+
 		for ce.tokenizer.Token() == "," {
 			if err := ce.writeSymbol(","); err != nil {
-				return err
+				return 0, err
 			}
 			if err := ce.CompileExpression(); err != nil {
-				return err
+				return 0, err
 			}
+			nArgs++
 		}
 	}
 
 	ce.indent--
 
-	return ce.writeLine("</expressionList>")
+	return nArgs, ce.writeLine("</expressionList>")
 }

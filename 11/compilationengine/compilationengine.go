@@ -51,19 +51,6 @@ func NewCompilationEngine(tokenizer *tokenizer.Tokenizer, writer *bufio.Writer) 
 	return ce
 }
 
-func (ce *CompilationEngine) writeReturnType() error {
-	if ce.tokenizer.TokenType() == tokenizer.KEYWORD {
-		kw, err := ce.tokenizer.KeyWord()
-		if err != nil {
-			return err
-		}
-		if kw == tokenizer.VOID {
-			return ce.writeExpectedAndAdvance(tokenizer.KEYWORD, "void")
-		}
-	}
-	return ce.writeType()
-}
-
 func (ce *CompilationEngine) writeType() error {
 	tt := ce.tokenizer.TokenType()
 	if tt != tokenizer.KEYWORD && tt != tokenizer.IDENTIFIER {
@@ -154,10 +141,6 @@ func (ce *CompilationEngine) writeVarDec() error {
 	}
 
 	return ce.consumeSymbol(";")
-}
-
-func (ce *CompilationEngine) writeSymbol(s string) error {
-	return ce.writeExpectedAndAdvance(tokenizer.SYMBOL, s)
 }
 
 func (ce *CompilationEngine) writeKeyword(s string) error {
@@ -270,21 +253,6 @@ func (ce *CompilationEngine) writeVariableUse(name string) error {
 	}
 
 	return ce.writeLine(fmt.Sprintf("push %s %d", segment, index))
-}
-
-func kindCategory(kind symboltable.Kind) string {
-	switch kind {
-	case symboltable.STATIC:
-		return "static"
-	case symboltable.FIELD:
-		return "field"
-	case symboltable.ARG:
-		return "arg"
-	case symboltable.VAR:
-		return "var"
-	default:
-		return "none"
-	}
 }
 
 func (ce *CompilationEngine) lookup(name string) (*symboltable.SymbolTable, bool) {

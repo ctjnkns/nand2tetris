@@ -181,11 +181,19 @@ func (ce *CompilationEngine) CompileVarDec() error {
 		return fmt.Errorf("token should be var when calling CompileVarDec; received: %d", kw)
 	}
 
+	if err := ce.writeLine("<varDec>"); err != nil {
+		return err
+	}
+
+	ce.indent++
+
 	if err := ce.writeVarDec(); err != nil {
 		return err
 	}
 
-	return nil
+	ce.indent--
+
+	return ce.writeLine("</varDec>")
 }
 
 func (ce *CompilationEngine) compileVarDecs() error {
