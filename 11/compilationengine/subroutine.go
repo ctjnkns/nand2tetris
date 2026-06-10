@@ -17,6 +17,8 @@ func (ce *CompilationEngine) CompileSubroutine() error {
 		return err
 	}
 
+	ce.subroutineKind = kw
+
 	if kw != tokenizer.CONSTRUCTOR && kw != tokenizer.FUNCTION && kw != tokenizer.METHOD {
 		return fmt.Errorf("token should be constructor, function, or method when calling ComipleSubroutine; got: %s", ce.tokenizer.Token())
 	}
@@ -79,6 +81,27 @@ func (ce *CompilationEngine) CompileSubroutineBody() error {
 	}
 
 	ce.indent = 2
+
+	switch ce.subroutineKind {
+	case tokenizer.CONSTRUCTOR:
+		fieldCount := ce.classTable.VarCount(symboltable.FIELD)
+		if err := ce.writeLine(fmt.Sprintf("push constant %d", fieldCount)); err != nil {
+			return err
+		}
+		if err := ce.writeLine("call Memory.alloc 1"); err != nil {
+			return err
+		}
+		if err := ce.writeLine("pop pointer 0"); err != nil {
+			return err
+		}
+	case tokenizer.METHOD:
+		if err := ce.writeLine("push argument 0"); err != nil {
+			return err
+		}
+		if err := ce.writeLine("pop pointer 0"); err != nil {
+			return err
+		}
+	}
 
 	if err := ce.CompileStatements(); err != nil {
 		return err

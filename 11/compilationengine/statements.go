@@ -48,7 +48,7 @@ func (ce *CompilationEngine) CompileLet() error {
 	name := ce.tokenizer.Token()
 	table, ok := ce.lookup(name)
 	if !ok {
-		return fmt.Errorf("identifier not found: %s")
+		return fmt.Errorf("identifier not found: %s", name)
 	}
 
 	kind := table.KindOf(name)
@@ -63,8 +63,27 @@ func (ce *CompilationEngine) CompileLet() error {
 		return err
 	}
 
+	isArrayAssignment := false
 	if ce.tokenizer.Token() == "[" {
-		return fmt.Errorf("array assignmnet not yet supported")
+		isArrayAssignment = true
+		if err := ce.consumeSymbol("["); err != nil {
+			return err
+		}
+
+		if err := ce.CompileExpression(); err != nil {
+			return err
+		}
+
+		if err := ce.consumeSymbol("]"); err != nil {
+			return err
+		}
+
+		if err := ce.writeLine(fmt.Sprintf("push %s %d", segment, index)); err != nil {
+			return err
+		}
+		if err := ce.writeLine("add"); err != nil {
+			return err
+		}
 	}
 
 	if err := ce.consumeSymbol("="); err != nil {
@@ -79,7 +98,23 @@ func (ce *CompilationEngine) CompileLet() error {
 		return err
 	}
 
-	return ce.writeLine(fmt.Sprintf("pop %s %d", segment, index))
+	if !isArrayAssignment {
+		return ce.writeLine(fmt.Sprintf("pop %s %d", segment, index))
+	}
+
+	if err := ce.writeLine("pop temp 0"); err != nil {
+		return err
+	}
+
+	if err := ce.writeLine("pop pointer 1"); err != nil {
+		return err
+	}
+
+	if err := ce.writeLine("push temp 0"); err != nil {
+		return err
+	}
+
+	return ce.writeLine("pop that 0")
 }
 
 func (ce *CompilationEngine) CompileIf() error {

@@ -34,6 +34,7 @@ type CompilationEngine struct {
 	subroutineName  string
 	classTable      *symboltable.SymbolTable
 	subroutineTable *symboltable.SymbolTable
+	subroutineKind  int
 	labelIndex      int
 	indent          int
 }
